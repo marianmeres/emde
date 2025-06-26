@@ -48,12 +48,12 @@ interface Props {
 }
 
 interface Page {
-	path: string; // "/some/path/to/page" (without the trailing slash)
+    path: string; // "/some/path/to/page" (without the trailing slash)
     root: Page | null; // the root Page (at "/")
-	parent: Page | null;
-	meta: Record<string, any>; // the frontmatter merged with meta.yaml
-	html: string; // the parsed markdown file output
-	depth: number; // hierarchy tree level
+    parent: Page | null;
+    meta: Record<string, any>; // the frontmatter merged with meta.yaml
+    html: string; // the parsed markdown file output
+    depth: number; // hierarchy tree level
 }
 ```
 
