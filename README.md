@@ -12,7 +12,7 @@ See [example source files](./example/src/) and/or the output [here](./example/di
 ## Usage
 
 ```sh
-deno run -A jsr:@marianmeres/emde/src/cli.ts --indir src --outdir dist
+deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist --verbose
 ```
 
 This example source `indir` folder structure:
