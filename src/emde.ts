@@ -307,7 +307,7 @@ async function _collectHelpers(relPath: string, srcRoot: string) {
 		path = _removeLastSegment(path);
 	} while (path && path !== SEPARATOR);
 
-	await _import("");
+	helpers = await _import("");
 	// console.log(helpers);
 
 	return helpers;
