@@ -2,11 +2,11 @@
 
 import { ItemCollection } from "@marianmeres/item-collection";
 import { deepMerge } from "@std/collections";
+import { encodeBase64 } from "@std/encoding";
 import { dim, green, red, yellow } from "@std/fmt/colors";
 import { copySync, existsSync, moveSync, walkSync } from "@std/fs";
 import { isAbsolute, join, normalize, SEPARATOR } from "@std/path";
 import { parse as parseYaml } from "@std/yaml";
-import { encodeBase64 } from "jsr:@std/encoding/base64";
 import _ from "lodash";
 import { marked } from "marked";
 import { breadcrumbs } from "./template-helpers/breadcrumbs.ts";
