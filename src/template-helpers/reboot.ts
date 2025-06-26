@@ -1,3 +1,4 @@
+/** Will return the bootstrap's reboot minified css */
 export function reboot(): string {
 	return `/*!
      * Bootstrap Reboot v5.3.7 (https://getbootstrap.com/)

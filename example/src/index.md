@@ -2,6 +2,10 @@
 title: The Beatles
 ---
 
+<div style="text-align: center; max-width: 65ch; margin-bottom: 2rem;">
+    <img src="./assets/banner.jpg" alt="Alt text" style="max-width: 100%; height: auto;">
+</div>
+
 # The Beatles
 
 The Beatles were an English rock band formed in Liverpool in 1960, comprising [John Lennon](./members/john/), [Paul McCartney](./members/paul/), [George Harrison](./members/george/), and [Ringo Starr](./members/ringo/). They are widely regarded as the most influential band in the history of popular music, revolutionizing the music industry and popular culture during the 1960s.

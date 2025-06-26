@@ -30,16 +30,16 @@ const FILENAME_META = "meta.yaml";
 const FILENAME_LAYOUT = "layout.ejs";
 const FILENAME_HELPERS = "helpers.js";
 
-const FALLBACK_LAYOUT_EJS = `<% const { depth, html, meta, path, _pages, _helpers } = props;  %>
+const FALLBACK_LAYOUT_EJS = `<% const { page, _pages, _helpers } = props;  %>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title><%= meta?.title ?? 'Untitled' %></title>
-		<style>${reboot()}</style>
+		<title><%= page.meta?.title ?? 'Untitled' %></title>
+		<style><%= _helpers?.reboot() %></style>
 	</head>
-	<body><%= html %></body>
+	<body><%= page.html %></body>
 </html>`;
 
 export interface RawPageInfo {
@@ -70,10 +70,6 @@ interface Helpers extends Record<string, any> {
 export interface Pages extends Record<string, Page> {}
 
 export interface Props {
-	depth: number;
-	html: string;
-	meta: Record<string, any>;
-	path: string;
 	page: Page;
 	root: Page;
 	parent: Page | null;

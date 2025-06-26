@@ -1,9 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
-
 import type { Page, Props } from "../emde.ts";
 
+/** Will return list of page from self to root */
 export function breadcrumbs(props: Props) {
-	const { page, parent, _pages, _helpers } = props || {};
+	const { page } = props || {};
 	const self = page;
 	const out: any[] = [];
 
@@ -12,8 +12,6 @@ export function breadcrumbs(props: Props) {
 		out.push(crumb);
 		crumb = crumb.parent;
 	} while (crumb);
-
-	// if (out.length) console.log("breadcrumbs", out);
 
 	return out.toReversed();
 }

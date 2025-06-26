@@ -7,7 +7,7 @@ import { emde } from "./mod.ts";
 
 const _basename = basename(import.meta.filename!);
 
-async function main() {
+export async function cli() {
 	const flags = parseArgs(Deno.args, {
 		boolean: ["help", "h", "force", "verbose"],
 		string: ["indir", "outdir"],
@@ -18,7 +18,7 @@ async function main() {
 		// prettier-ignore
 		// deno-fmt-ignore
 		return console.log(`
-${dim("Usage:")} ${bold(`${_basename} --indir my/src --outdir my/dist [--force] [--verbose]`)}
+${dim("Usage:")} ${bold(`path/to/emde-cli-script.ts --indir my/src --outdir my/dist [--force] [--verbose]`)}
 `);
 	}
 
@@ -37,5 +37,5 @@ ${dim("Usage:")} ${bold(`${_basename} --indir my/src --outdir my/dist [--force] 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 if (import.meta.main) {
-	main();
+	cli();
 }

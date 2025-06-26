@@ -45,19 +45,24 @@
 		</style>
 	</head>
 	<body>
-		<%= _helpers.topInfo?.()  %>
-		<nav style="margin-bottom: 1rem;">
-			<!-- <strong>Breadcrumbs</strong> -->
-			<ul class="breadcrumbs">
-				<% for (const [i, p] of crumbs.entries()) { %>
-					<li>
-						<% if (i) { %>&rarr; <% } %>
-						<a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a>
-					</li>
-				<% } %>
-			</ul>
-		</nav>
-		<hr />
+		<%= _helpers.topInfo?.(props)  %>
+		<% if (self.parent) { %>
+			<nav style="margin-bottom: 1rem;">
+				<ul class="breadcrumbs">
+					<% for (const [i, p] of crumbs.entries()) { %>
+						<li>
+							<% if (i) { %>&rarr; <% } %>
+							<% if (i === crumbs.length - 1) { %>
+								<%= title(p) %>
+							<% } else { %>
+								<a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a>
+							<% } %>
+						</li>
+					<% } %>
+				</ul>
+			</nav>
+			<hr />
+		<% } %>
 		<main><%= self.html %></main>
 		<% if (childs.length) { %>
 			<hr />

@@ -1,6 +1,4 @@
-/**
- * Will return relative path between from and to.
- */
+/** Will return relative path between from and to. */
 export function relative(fromPath: string, toPath: string): string {
 	// Normalize paths by removing trailing slashes and splitting into parts
 	const normalize = (path: string) =>
