@@ -1,0 +1,85 @@
+<% 
+	const { page, root, parent, _helpers, _pages } = props; 
+	const { relative, children, reboot, siblings, breadcrumbs } = _helpers;
+
+	const self = page;
+    const childs = children?.(props) ?? [];
+    const sibs = siblings?.(props) ?? [];
+	const crumbs = breadcrumbs?.(props) ?? [];
+
+	const title = (p) =>  {
+		const t = p?.meta.title || p?.path.split('/').slice(-1);
+		return t === '/' ? 'Home' : t;
+	};
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content="https://github.com/marianmeres/emde" />
+		<title><%= title(self) %> | <%= title(root) %></title>
+		<style><%= reboot?.() %></style>
+		<style>
+			:root {
+				--bs-link-color-rgb: 255, 80, 80;
+				--bs-link-hover-color-rgb: 255, 0, 0;
+			}
+			body {
+				padding: 2rem;
+			}
+			main {
+				max-width: 65ch;
+			}
+			ul.breadcrumbs {
+				display: inline;
+				list-style-type: none;
+				margin: 0 0 0 0;
+				padding: 0;
+				li {
+					display: inline;
+					margin: 0;
+					padding: 0;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<%= _helpers.topInfo?.()  %>
+		<nav style="margin-bottom: 1rem;">
+			<!-- <strong>Breadcrumbs</strong> -->
+			<ul class="breadcrumbs">
+				<% for (const [i, p] of crumbs.entries()) { %>
+					<li>
+						<% if (i) { %>&rarr; <% } %>
+						<a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a>
+					</li>
+				<% } %>
+			</ul>
+		</nav>
+		<hr />
+		<main><%= self.html %></main>
+		<% if (childs.length) { %>
+			<hr />
+			<nav>
+				<strong>Navigation</strong>
+				<ul>
+					<% for (const p of childs) { %>
+						<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+					<% } %>
+				</ul>
+			</nav>
+		<% } %>
+		<% if (sibs.length) { %>
+			<hr />
+			<nav>
+				<strong>Related</strong>
+				<ul>
+					<% for (const p of sibs) { %>
+						<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+					<% } %>
+				</ul>
+			</nav>
+		<% } %>
+	</body>
+</html>

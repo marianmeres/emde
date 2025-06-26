@@ -1,0 +1,1 @@
+this is not a content dir, but it must exist in the output

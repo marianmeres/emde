@@ -1,0 +1,54 @@
+<% 
+	const { page, parent, _helpers, _pages } = props; 
+	const { foo, hey, relative, children, siblings, breadcrumbs } = _helpers;
+
+	const self = page;
+	const childs = children?.(props) ?? [];
+	const sibs = siblings?.(props) ?? [];
+	const crumbs = breadcrumbs?.(props) ?? [];
+
+	const title = (p) =>  {
+		const t = p?.meta.title || p?.path.split('/').slice(-1);
+		return t === '/' ? 'Home' : t;
+	};
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title><%= page.meta?.title || 'Untitled' %></title>
+	</head>
+	<body>
+		<nav>
+			<ul>
+				<% for (const p of crumbs) { %>
+					<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+				<% } %>
+			</ul>
+		</nav>
+		<main><%= self.html %></main>
+		<% if (childs.length) { %>
+			<nav>
+				<strong>Navigation</strong>
+				<ul>
+					<% for (const p of childs) { %>
+						<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+					<% } %>
+				</ul>
+			</nav>
+		<% } %>
+		<% if (sibs.length) { %>
+			<nav>
+				<strong>Related</strong>
+				<ul>
+					<% for (const p of sibs) { %>
+						<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+					<% } %>
+				</ul>
+			</nav>
+		<% } %>
+		<hr />
+		helpers: <%= foo?.() %> <%= hey?.() %>
+	</body>
+</html>
