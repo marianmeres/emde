@@ -41,10 +41,19 @@ The compiled template is called with the `props` argument:
 ```ts
 interface Props {
     page: Page; // currently rendered page
-    root: Page; // the root page
+    root: Page | null; // the root page
     parent: Page | null; // the parent page
-    _pages: Pages; // map of all pages
+    _pages: Record<string, Page>; // path based map of all pages
     _helpers: Helpers; // view helpers
+}
+
+interface Page {
+	path: string; // "/some/path/to/page" (without the trailing slash)
+    root: Page | null; // the root Page (at "/")
+	parent: Page | null;
+	meta: Record<string, any>; // the frontmatter merged with meta.yaml
+	html: string; // the parsed markdown file output
+	depth: number; // hierarchy tree level
 }
 ```
 

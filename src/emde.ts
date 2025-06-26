@@ -72,7 +72,7 @@ export interface Pages extends Record<string, Page> {}
 
 export interface Props {
 	page: Page;
-	root: Page;
+	root: Page | null;
 	parent: Page | null;
 	_pages: Pages;
 	_helpers: Helpers;
@@ -194,7 +194,7 @@ export async function emde(
 					html = layout({
 						page: _pages[relPath],
 						parent: row.parent === null ? null : _pages[row.parent],
-						root: _pages["/"],
+						root: _pages["/"] ?? null,
 						_pages,
 						_helpers: {
 							_,
