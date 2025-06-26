@@ -23,8 +23,12 @@ This example source `indir` folder structure:
 |   +--  index.md
 ```
 will generate these pages in the `outdir`:
-- `/index.html`
-- `/some/index.html`
+```
++-- dist
+|   +-- some
+|   |   +-- index.html
+|   +--  index.html
+```
 
 ## Customization
 
