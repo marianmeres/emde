@@ -292,7 +292,7 @@ function _getLayout(relPath: string, srcRoot: string): CallableFunction {
 }
 
 async function _collectHelpers(relPath: string, srcRoot: string) {
-	let helpers = {};
+	let helpers: any = {};
 
 	const _import = async (_relPath: string) => {
 		const helpersFile = join(srcRoot, _relPath, FILENAME_HELPERS);
@@ -312,7 +312,10 @@ async function _collectHelpers(relPath: string, srcRoot: string) {
 		path = _removeLastSegment(path);
 	} while (path && path !== SEPARATOR);
 
-	return await _import("");
+	await _import("");
+	// console.log(helpers);
+
+	return helpers;
 }
 
 function _collectMeta(relPath: string, srcRoot: string): Record<string, any> {
