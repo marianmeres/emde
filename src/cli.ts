@@ -7,7 +7,7 @@ import { emde } from "./mod.ts";
 
 const _basename = basename(import.meta.filename!);
 
-export async function cli() {
+export async function cli(): Promise<void> {
 	const flags = parseArgs(Deno.args, {
 		boolean: ["help", "h", "force", "verbose"],
 		string: ["indir", "outdir"],

@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
-import type { Props } from "../emde.ts";
+import type { Page, Props } from "../emde.ts";
 
 /** Will return all sibling pages to self. */
-export function siblings(props: Props) {
+export function siblings(props: Props): Page[] {
 	const { page, _pages } = props || {};
 	const self = page;
 	const out: any[] = [];
