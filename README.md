@@ -22,7 +22,7 @@ This example source `indir` folder structure:
 |   |   +-- index.md
 |   +--  index.md
 ```
-will generate these pages in the `outdir`:
+will generate these html pages in the `outdir`:
 ```
 +-- dist
 |   +-- some
