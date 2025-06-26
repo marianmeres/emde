@@ -1,7 +1,10 @@
 {
 	"name": "@marianmeres/emde",
 	"version": "1.0.1",
-	"exports": "./src/mod.ts",
+	"exports": {
+		".": "./src/mod.ts",
+		"./cli": "./src/cli.ts"
+	},
 	"tasks": {
 		"test": "deno test -A --watch",
 		"build:example": "deno run -A src/cli.ts --indir example/src --outdir example/dist --force --verbose"
