@@ -28,11 +28,15 @@ will generate these pages in the `outdir`:
 
 ## Customization
 
-### "front matter" and/or `meta.yaml`
+### Metadata
+
 For pages metadata both markdown's "front matter" as well as `meta.yaml` files are supported. The `meta.yaml` files are supported to be located anywhere in the page hierarchy path (lower level is merged with the upper).
 
-### `layout.ejs`
-Pages are rendered with optional `layout.ejs` anywhere in the page hierarchy path (lower level overrides). The compiled template is called with the `props` argument:
+### Rendering
+
+Pages are rendered via [lodash's template function](https://lodash.com/docs/4.17.15#template) with optional `layout.ejs` anywhere in the page hierarchy path (lower level overrides). If no custom `layout.ejs` is found, the very basic default one will be used.
+
+The compiled template is called with the `props` argument:
 
 ```ts
 interface Props {
@@ -44,7 +48,8 @@ interface Props {
 }
 ```
 
-### `helpers.js`
+### View helpers
+
 View helpers exported from `helpers.js` are supported anywhere in the page hierarchy path (lower level is merged with the upper). The merged exported members will
 be passed to compiled layout under `_helpers` props key.
 
