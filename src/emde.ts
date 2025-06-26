@@ -4,14 +4,9 @@ import { ItemCollection } from "@marianmeres/item-collection";
 import { deepMerge } from "@std/collections";
 import { dim, green, red, yellow } from "@std/fmt/colors";
 import { copySync, existsSync, moveSync, walkSync } from "@std/fs";
-import {
-	isAbsolute,
-	join,
-	normalize,
-	relative as stdRelative,
-	SEPARATOR,
-} from "@std/path";
+import { isAbsolute, join, normalize, SEPARATOR } from "@std/path";
 import { parse as parseYaml } from "@std/yaml";
+import { encodeBase64 } from "jsr:@std/encoding/base64";
 import _ from "lodash";
 import { marked } from "marked";
 import { breadcrumbs } from "./template-helpers/breadcrumbs.ts";
@@ -299,8 +294,8 @@ async function _collectHelpers(relPath: string, srcRoot: string) {
 		if (existsSync(helpersFile)) {
 			// const imported = await import(helpersFile);
 			// https://docs.deno.com/deploy/api/dynamic-import/
-			const importSource = Deno.readTextFileSync(helpersFile);
-			const imported = await import(`data:text/javascript,${importSource}`);
+			const jsSource = encodeBase64(Deno.readTextFileSync(helpersFile));
+			const imported = await import(`data:text/javascript;base64,${jsSource}`);
 			helpers = { ...(imported || {}), ...helpers };
 		}
 		return helpers;

@@ -7,6 +7,8 @@
     "jsr:@std/assert@1": "1.0.13",
     "jsr:@std/cli@^1.0.20": "1.0.20",
     "jsr:@std/collections@^1.1.1": "1.1.1",
+    "jsr:@std/encoding@*": "1.0.10",
+    "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/fmt@^1.0.8": "1.0.8",
     "jsr:@std/fs@^1.0.18": "1.0.18",
     "jsr:@std/internal@^1.0.6": "1.0.8",
@@ -42,6 +44,9 @@
     },
     "@std/collections@1.1.1": {
       "integrity": "eff6443fbd9d5a6697018fb39c5d13d5f662f0045f21392d640693d0008ab2af"
+    },
+    "@std/encoding@1.0.10": {
+      "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
     },
     "@std/fmt@1.0.8": {
       "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
@@ -86,6 +91,7 @@
       "jsr:@std/assert@1",
       "jsr:@std/cli@^1.0.20",
       "jsr:@std/collections@^1.1.1",
+      "jsr:@std/encoding@^1.0.10",
       "jsr:@std/fmt@^1.0.8",
       "jsr:@std/fs@^1.0.18",
       "jsr:@std/path@^1.1.0",
