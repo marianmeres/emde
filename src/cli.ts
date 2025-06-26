@@ -2,10 +2,7 @@
 
 import { parseArgs } from "@std/cli";
 import { bold, dim, red } from "@std/fmt/colors";
-import { basename } from "@std/path";
 import { emde } from "./mod.ts";
-
-const _basename = basename(import.meta.filename!);
 
 export default async function cli(): Promise<void> {
 	const flags = parseArgs(Deno.args, {
@@ -18,7 +15,7 @@ export default async function cli(): Promise<void> {
 		// prettier-ignore
 		// deno-fmt-ignore
 		return console.log(`
-${dim("Usage:")} ${bold(`path/to/emde-cli-script.ts --indir my/src --outdir my/dist [--force] [--verbose]`)}
+${dim("Usage:")} ${bold(`deno run -A jsr:@marianmeres/emde/cli --indir my/src --outdir my/dist [--force] [--verbose]`)}
 `);
 	}
 
