@@ -11,6 +11,7 @@ import _ from "lodash";
 import { marked } from "marked";
 import { breadcrumbs } from "./template-helpers/breadcrumbs.ts";
 import { children } from "./template-helpers/children.ts";
+import { qsa } from "./template-helpers/qsa.ts";
 import { reboot } from "./template-helpers/reboot.ts";
 import { relative } from "./template-helpers/relative.ts";
 import { siblings } from "./template-helpers/siblings.ts";
@@ -39,8 +40,9 @@ const FALLBACK_LAYOUT_EJS = `<% const { page, _pages, _helpers } = props;  %>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title><%= page.meta?.title ?? 'Untitled' %></title>
 		<style><%= _helpers?.reboot() %></style>
+		<style>body { padding: 1rem; } main { max-width: 65ch; }</style>
 	</head>
-	<body><%= page.html %></body>
+	<body><main><%= page.html %></main></body>
 </html>`;
 
 export interface RawPageInfo {
@@ -66,6 +68,7 @@ interface Helpers extends Record<string, any> {
 	reboot: typeof reboot;
 	relative: typeof relative;
 	siblings: typeof siblings;
+	qsa: typeof qsa;
 }
 
 export interface Pages extends Record<string, Page> {}
@@ -205,6 +208,7 @@ export async function emde(
 							reboot,
 							relative,
 							siblings,
+							qsa,
 							...(await _collectHelpers(relPath, tempDir)),
 						},
 					});
