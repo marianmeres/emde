@@ -7,3 +7,15 @@ export function topInfo(_props) {
 		</div>
 	`;
 }
+
+export function topCss(_props) {
+	return `
+:root {
+	--bs-link-color-rgb: 255, 80, 80;
+	--bs-link-hover-color-rgb: 255, 0, 0;
+}
+body {
+	padding: 2rem;
+}
+	`;
+}

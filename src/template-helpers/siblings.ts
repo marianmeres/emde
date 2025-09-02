@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import type { Page, Props } from "../emde.ts";
 
 /** Will return all sibling pages to self. */

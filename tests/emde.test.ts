@@ -27,7 +27,7 @@ Deno.test("emde works", async () => {
 
 	await emde("tests/fixtures/src-a", tmp, { verbose });
 
-	const routes = ["/", "/hey", "/foo", "/foo/bar"];
+	const routes = ["/", "/hey", "/foo", "/foo/bar", "/sitemap"];
 
 	routes.forEach((route) => {
 		// must

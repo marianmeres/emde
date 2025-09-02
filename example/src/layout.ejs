@@ -2,9 +2,10 @@
 	const { page, root, parent, _helpers, _pages } = props; 
 	const { relative, children, reboot, siblings, breadcrumbs } = _helpers;
 
+	const is_not_sitemap = (p) => p.path !== '/sitemap';
 	const self = page;
-	const childs = children?.(props) ?? [];
-	const sibs = siblings?.(props) ?? [];
+	const childs = (children?.(props) ?? []).filter(is_not_sitemap);
+	const sibs = (siblings?.(props) ?? []).filter(is_not_sitemap);
 	const crumbs = breadcrumbs?.(props) ?? [];
 
 	const title = (p) =>  {
@@ -21,13 +22,7 @@
 		<title><%= title(self) %> | <%= title(root) %></title>
 		<style><%= reboot?.() %></style>
 		<style>
-			:root {
-				--bs-link-color-rgb: 255, 80, 80;
-				--bs-link-hover-color-rgb: 255, 0, 0;
-			}
-			body {
-				padding: 2rem;
-			}
+			<%= _helpers.topCss?.(props)  %>
 			main {
 				max-width: 65ch;
 			}
@@ -87,5 +82,7 @@
 				</ul>
 			</nav>
 		<% } %>
+		<hr />
+		<p><a href="<%= relative(self.path, '/sitemap') %>">Sitemap</a></p>
 	</body>
 </html>

@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
-
 declare const document: any;
 
 export function qsa(

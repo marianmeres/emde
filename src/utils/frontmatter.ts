@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
-
 import { parse as parseYaml } from "@std/yaml";
 
 /** parseFrontMatter return type */

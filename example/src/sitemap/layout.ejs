@@ -1,0 +1,25 @@
+<%
+	const { page, parent, _helpers, _pages } = props; 
+	const { sitemap, reboot } = _helpers;
+	const self = page;
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content="https://github.com/marianmeres/emde" />
+		<title><%= page.meta?.title || 'Sitemap' %></title>
+		<style><%= reboot?.() %></style>
+		<style>
+			<%= _helpers.topCss?.(props)  %>
+		</style>
+		<script defer src="https://assets.onedollarstats.com/stonks.js"></script>
+	</head>
+    <body>
+        <h1>Sitemap</h1>
+        <nav aria-label="Site navigation">
+            <%= sitemap(props) %>
+        </nav>
+    </body>
+</html>

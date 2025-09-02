@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
-
 import { ItemCollection } from "@marianmeres/item-collection";
 import { deepMerge } from "@std/collections";
 import { encodeBase64 } from "@std/encoding";
@@ -16,6 +14,7 @@ import { reboot } from "./template-helpers/reboot.ts";
 import { relative } from "./template-helpers/relative.ts";
 import { siblings } from "./template-helpers/siblings.ts";
 import { parseFrontMatter } from "./utils/frontmatter.ts";
+import { sitemap } from "./template-helpers/sitemap.ts";
 
 /** Options */
 export interface EmdeOptions {
@@ -68,6 +67,7 @@ interface Helpers extends Record<string, any> {
 	reboot: typeof reboot;
 	relative: typeof relative;
 	siblings: typeof siblings;
+	sitemap: typeof sitemap;
 	qsa: typeof qsa;
 }
 
@@ -186,6 +186,7 @@ export async function emde(
 				return [k, v];
 			})
 		);
+		// console.log(_pages);
 
 		// 4. generate (write) the static index.html
 		for (const [relPath, row] of Object.entries(info)) {
@@ -208,6 +209,7 @@ export async function emde(
 							reboot,
 							relative,
 							siblings,
+							sitemap,
 							qsa,
 							...(await _collectHelpers(relPath, tempDir)),
 						},

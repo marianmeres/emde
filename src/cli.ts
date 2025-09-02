@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
-
 import { parseArgs } from "@std/cli";
 import { bold, dim, red } from "@std/fmt/colors";
 import { emde } from "./mod.ts";

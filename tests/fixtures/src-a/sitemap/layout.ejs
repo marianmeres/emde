@@ -1,0 +1,19 @@
+<%
+	const { page, parent, _helpers, _pages } = props; 
+	const { sitemap } = _helpers;
+	const self = page;
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title><%= page.meta?.title || 'Sitemap' %></title>
+	</head>
+    <body>
+        <h1>Sitemap</h1>
+        <nav aria-label="Site navigation">
+            <%= sitemap(props) %>
+        </nav>
+    </body>
+</html>
