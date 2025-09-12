@@ -23,8 +23,10 @@
 		<style><%= reboot?.() %></style>
 		<style>
 			<%= _helpers.topCss?.(props)  %>
-			main {
-				max-width: 65ch;
+			.container {
+				max-width: 66ch;
+				margin: 0 auto;
+				background: white;
 			}
 			ul.breadcrumbs {
 				display: inline;
@@ -42,47 +44,49 @@
 	</head>
 	<body>
 		<%= _helpers.topInfo?.(props)  %>
-		<% if (self.parent) { %>
-			<nav style="margin-bottom: 1rem;">
-				<ul class="breadcrumbs">
-					<% for (const [i, p] of crumbs.entries()) { %>
-						<li>
-							<% if (i) { %>&rarr; <% } %>
-							<% if (i === crumbs.length - 1) { %>
-								<%= title(p) %>
-							<% } else { %>
-								<a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a>
-							<% } %>
-						</li>
-					<% } %>
-				</ul>
-			</nav>
+		<div class="container">
+			<% if (self.parent) { %>
+				<nav style="margin-bottom: 1rem;">
+					<ul class="breadcrumbs">
+						<% for (const [i, p] of crumbs.entries()) { %>
+							<li>
+								<% if (i) { %>&rarr; <% } %>
+								<% if (i === crumbs.length - 1) { %>
+									<%= title(p) %>
+								<% } else { %>
+									<a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a>
+								<% } %>
+							</li>
+						<% } %>
+					</ul>
+				</nav>
+				<hr />
+			<% } %>
+			<main><%= self.html %></main>
+			<% if (childs.length) { %>
+				<hr />
+				<nav>
+					<strong>Navigation</strong>
+					<ul>
+						<% for (const p of childs) { %>
+							<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+						<% } %>
+					</ul>
+				</nav>
+			<% } %>
+			<% if (sibs.length) { %>
+				<hr />
+				<nav>
+					<strong>Related</strong>
+					<ul>
+						<% for (const p of sibs) { %>
+							<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
+						<% } %>
+					</ul>
+				</nav>
+			<% } %>
 			<hr />
-		<% } %>
-		<main><%= self.html %></main>
-		<% if (childs.length) { %>
-			<hr />
-			<nav>
-				<strong>Navigation</strong>
-				<ul>
-					<% for (const p of childs) { %>
-						<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
-					<% } %>
-				</ul>
-			</nav>
-		<% } %>
-		<% if (sibs.length) { %>
-			<hr />
-			<nav>
-				<strong>Related</strong>
-				<ul>
-					<% for (const p of sibs) { %>
-						<li><a href="<%= relative(self.path, p.path) %>/"><%= title(p) %></a></li>
-					<% } %>
-				</ul>
-			</nav>
-		<% } %>
-		<hr />
-		<p><a href="<%= relative(self.path, '/sitemap') %>/">Sitemap</a></p>
+			<p><a href="<%= relative(self.path, '/sitemap') %>/">Sitemap</a></p>
+		</div>
 	</body>
 </html>

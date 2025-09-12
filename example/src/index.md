@@ -2,7 +2,7 @@
 title: The Beatles
 ---
 
-<div style="text-align: center; max-width: 65ch; margin-bottom: 2rem;">
+<div style="text-align: center; margin-bottom: 2rem;">
     <img src="./assets/banner.jpg" alt="Alt text" style="max-width: 100%; height: auto;">
 </div>
 
