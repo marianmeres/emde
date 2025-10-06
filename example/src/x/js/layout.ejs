@@ -1,0 +1,36 @@
+<%
+	const { page, parent, _helpers, _pages } = props; 
+	const { sitemap, reboot } = _helpers;
+	const self = page;
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content="https://github.com/marianmeres/emde" />
+		<title><%= page.meta?.title || '' %></title>
+		<style><%= reboot?.() %></style>
+		<style>body { padding: 1rem; }</style>
+	</head>
+    <body>
+		Please wait...
+    </body>
+	<script>
+		// intentionally sleep a while
+		setTimeout(() => {
+			const h = document.createElement('h1');
+			h.innerText = "JS render test";
+	
+			const p = document.createElement('p');
+			p.innerText = "This content was client-side added via JS.";
+			
+			const container = document.createElement('article');
+			container.appendChild(h);
+			container.appendChild(p);
+
+			document.body.innerHTML = '';
+			document.body.appendChild(container);
+		}, 100);
+	</script>
+</html>
