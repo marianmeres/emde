@@ -1,4 +1,4 @@
 ---
-title: JS rendered page example
+title: Please wait...
 ---
 
