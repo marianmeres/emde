@@ -87,7 +87,7 @@ export interface Props {
 export async function emde(
 	srcDir: string,
 	destDir: string,
-	options?: EmdeOptions
+	options?: EmdeOptions,
 ): Promise<string> {
 	srcDir = _normalize(srcDir);
 	destDir = _normalize(destDir);
@@ -105,7 +105,7 @@ export async function emde(
 	// is the dest empty?
 	if (!force && !_isDirEmptySync(destDir)) {
 		throw new TypeError(
-			`Destination directory "${destDir}" does not appear to be empty (use --force to override)`
+			`Destination directory "${destDir}" does not appear to be empty (use --force to override)`,
 		);
 	}
 
@@ -123,10 +123,12 @@ export async function emde(
 		// 2. collect relevant dir paths info
 		const pageDirs = [];
 		const forbiddenPageDirs = [];
-		for (const dirEntry of walkSync(tempDir, {
-			includeDirs: true,
-			includeFiles: false,
-		})) {
+		for (
+			const dirEntry of walkSync(tempDir, {
+				includeDirs: true,
+				includeFiles: false,
+			})
+		) {
 			const relPath = dirEntry.path.slice(tempDir.length) || SEPARATOR;
 			if (_isValidContentDir(dirEntry.path)) {
 				if (_hasHiddenLikeSegment(relPath)) {
@@ -154,12 +156,12 @@ export async function emde(
 					content: parsed.content,
 					meta: deepMerge(meta, parsed.meta || {}),
 					html,
-					depth:
-						relPath === SEPARATOR ? 0 : relPath.split(SEPARATOR).length - 1,
-					parent:
-						relPath === SEPARATOR
-							? null
-							: _normalizeSlash(_removeLastSegment(relPath)),
+					depth: relPath === SEPARATOR
+						? 0
+						: relPath.split(SEPARATOR).length - 1,
+					parent: relPath === SEPARATOR
+						? null
+						: _normalizeSlash(_removeLastSegment(relPath)),
 				};
 			} catch (e: any) {
 				console.log(red(` ✘ ${relPath} (info stage)`));
@@ -177,14 +179,14 @@ export async function emde(
 				v.path = _normalizeSlash(v.relPath) || SEPARATOR;
 				delete (v as any).relPath;
 				return [_normalizeSlash(k)!, v as Page];
-			})
+			}),
 		);
 		// fix parents in second loop (we needed to have all collected first)
 		_pages = Object.fromEntries(
 			Object.entries(_pages).map(([k, v]) => {
 				v.parent = v.parent === null ? null : _pages[v.parent as any];
 				return [k, v];
-			})
+			}),
 		);
 		// console.log(_pages);
 
@@ -240,7 +242,7 @@ export async function emde(
 				[FILENAME_META, FILENAME_LAYOUT, FILENAME_HELPERS].forEach(
 					(file: string) => {
 						_removeSyncIfExists(join(tempDir, dir, file));
-					}
+					},
 				);
 			});
 		}
@@ -288,7 +290,7 @@ function _getLayout(relPath: string, srcRoot: string): CallableFunction {
 	// handle root
 	return (
 		_readLayout(join(srcRoot, "", FILENAME_LAYOUT)) ??
-		_ejsCompile(FALLBACK_LAYOUT_EJS)
+			_ejsCompile(FALLBACK_LAYOUT_EJS)
 	);
 }
 
@@ -327,7 +329,7 @@ function _collectMeta(relPath: string, srcRoot: string): Record<string, any> {
 		// we going from leaf to root, the leafs must overwrite the root
 		config = deepMerge(
 			_parseYamlFileSyncIfExists(join(srcRoot, path, FILENAME_META)),
-			config
+			config,
 		);
 		path = _removeLastSegment(path);
 	} while (path && path !== SEPARATOR);
@@ -335,7 +337,7 @@ function _collectMeta(relPath: string, srcRoot: string): Record<string, any> {
 	// handle root
 	return deepMerge(
 		_parseYamlFileSyncIfExists(join(srcRoot, "", FILENAME_META)),
-		config
+		config,
 	);
 }
 

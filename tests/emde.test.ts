@@ -12,9 +12,7 @@ Deno.test("emde sanity check", async () => {
 	await assertRejects(() => emde("./foo", "tests/tmp"));
 
 	// dest under sourtce
-	await assertRejects(() =>
-		emde("tests/fixtures/src-a", "tests/fixtures/src-a/foo")
-	);
+	await assertRejects(() => emde("tests/fixtures/src-a", "tests/fixtures/src-a/foo"));
 
 	// not empty destination
 	emptyDirSync(tmp);

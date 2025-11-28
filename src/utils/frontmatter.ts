@@ -11,7 +11,7 @@ export interface ParsedFrontMatter {
  */
 export function parseFrontMatter(
 	markdown: string,
-	strict: boolean = true
+	strict: boolean = true,
 ): ParsedFrontMatter {
 	const orig = `${markdown}`; // untouched backup
 	const result: ParsedFrontMatter = { meta: null, content: "" };

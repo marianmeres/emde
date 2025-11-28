@@ -12,7 +12,7 @@ function _children(
 	pages: Pages,
 	depth: number,
 	prefix: string,
-	config: Partial<SitemapOpts> = {}
+	config: Partial<SitemapOpts> = {},
 ) {
 	const { ulClass = "", liClass = "", aClass = "" } = config ?? {};
 	let out = "";
@@ -22,10 +22,12 @@ function _children(
 			if (!out) out += `\n<ul class="${ulClass}" data-depth="${depth}" >`;
 			out += [
 				`\n<li data-depth="${depth}" class="${liClass}">`,
-				`<a href="${relative(
-					self.path,
-					_page.path
-				)}/" class="${aClass}" data-depth="${depth}" >`,
+				`<a href="${
+					relative(
+						self.path,
+						_page.path,
+					)
+				}/" class="${aClass}" data-depth="${depth}" >`,
 				_page.meta.title || _page.path,
 				"</a>",
 				_children(self, pages, depth + 1, _page.path, config),
@@ -40,7 +42,7 @@ function _children(
 
 export function sitemap(
 	props: Props,
-	config: Partial<SitemapOpts> = {}
+	config: Partial<SitemapOpts> = {},
 ): string {
 	return _children(props.page, props._pages, 0, "/", config);
 }
