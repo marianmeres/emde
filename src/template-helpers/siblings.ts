@@ -1,6 +1,27 @@
 import type { Page, Props } from "../emde.ts";
 
-/** Will return all sibling pages to self. */
+/**
+ * Returns all sibling pages of the current page.
+ *
+ * Siblings are pages that share the same parent. The current page is excluded
+ * from the results.
+ *
+ * @param props - The template props object
+ * @returns Array of sibling pages (unordered), excluding the current page
+ *
+ * @example
+ * ```ejs
+ * <% const sibs = _helpers.siblings(props); %>
+ * <% if (sibs.length) { %>
+ *   <h2>See also:</h2>
+ *   <ul>
+ *     <% sibs.forEach((sib) => { %>
+ *       <li><a href="<%= _helpers.relative(page.path, sib.path) %>/"><%= sib.meta.title %></a></li>
+ *     <% }); %>
+ *   </ul>
+ * <% } %>
+ * ```
+ */
 export function siblings(props: Props): Page[] {
 	const { page, _pages } = props || {};
 	const self = page;

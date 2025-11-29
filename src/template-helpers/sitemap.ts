@@ -1,9 +1,15 @@
 import type { Page, Pages, Props } from "../emde.ts";
 import { relative } from "./relative.ts";
 
-interface SitemapOpts {
+/**
+ * Configuration options for sitemap HTML generation.
+ */
+export interface SitemapOpts {
+	/** CSS class for `<ul>` elements */
 	ulClass: string;
+	/** CSS class for `<li>` elements */
 	liClass: string;
+	/** CSS class for `<a>` elements */
 	aClass: string;
 }
 
@@ -40,6 +46,34 @@ function _children(
 	return out;
 }
 
+/**
+ * Generates a hierarchical HTML sitemap of all pages.
+ *
+ * Creates nested `<ul>` / `<li>` / `<a>` structure representing the entire site hierarchy.
+ * Links are generated with relative paths from the current page. Each element includes
+ * a `data-depth` attribute indicating its level in the hierarchy.
+ *
+ * @param props - The template props object
+ * @param config - Optional CSS class configuration for generated elements
+ * @returns HTML string containing the sitemap navigation
+ *
+ * @example
+ * ```ejs
+ * <nav aria-label="Site navigation">
+ *   <%= _helpers.sitemap(props) %>
+ * </nav>
+ * ```
+ *
+ * @example
+ * ```ejs
+ * <!-- With custom classes for styling -->
+ * <%= _helpers.sitemap(props, {
+ *   ulClass: 'nav-list',
+ *   liClass: 'nav-item',
+ *   aClass: 'nav-link'
+ * }) %>
+ * ```
+ */
 export function sitemap(
 	props: Props,
 	config: Partial<SitemapOpts> = {},

@@ -1,4 +1,21 @@
-/** Will return the bootstrap's reboot minified css */
+/**
+ * Returns Bootstrap's Reboot CSS as a minified string.
+ *
+ * Reboot is a collection of CSS reset rules that provides a consistent baseline
+ * for styling across browsers. It's included in the default layout template.
+ *
+ * @returns Minified CSS string (Bootstrap Reboot v5.3.7)
+ *
+ * @see https://getbootstrap.com/docs/5.3/content/reboot/
+ *
+ * @example
+ * ```ejs
+ * <head>
+ *   <style><%= _helpers.reboot() %></style>
+ *   <style>body { padding: 1rem; }</style>
+ * </head>
+ * ```
+ */
 export function reboot(): string {
 	return `/*!
      * Bootstrap Reboot v5.3.7 (https://getbootstrap.com/)

@@ -1,4 +1,26 @@
-/** Will return relative path between from and to. */
+/**
+ * Calculates the relative path from one page path to another.
+ *
+ * Useful for generating relative URLs in templates that work correctly
+ * regardless of the site's deployment location.
+ *
+ * @param fromPath - The source page path (e.g., "/blog/posts")
+ * @param toPath - The destination page path (e.g., "/about")
+ * @returns Relative path string (e.g., "../../about")
+ *
+ * @example
+ * ```ejs
+ * <!-- From /blog/posts to /about -->
+ * <a href="<%= _helpers.relative('/blog/posts', '/about') %>/">About</a>
+ * <!-- Outputs: <a href="../../about/">About</a> -->
+ * ```
+ *
+ * @example
+ * ```ejs
+ * <!-- Navigate to parent -->
+ * <a href="<%= _helpers.relative(page.path, page.parent.path) %>/">Back</a>
+ * ```
+ */
 export function relative(fromPath: string, toPath: string): string {
 	// Normalize paths by removing trailing slashes and splitting into parts
 	const normalize = (path: string) =>

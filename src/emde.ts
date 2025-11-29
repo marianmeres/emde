@@ -16,11 +16,20 @@ import { siblings } from "./template-helpers/siblings.ts";
 import { parseFrontMatter } from "./utils/frontmatter.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
 
-/** Options */
+/**
+ * Configuration options for the emde static site generator.
+ */
 export interface EmdeOptions {
-	/** Will console.log more */
+	/**
+	 * If `true`, logs progress for each processed page to the console.
+	 * @default true
+	 */
 	verbose?: boolean;
-	/** If truthy will proceed even if destDir is not empty. */
+	/**
+	 * If `true`, allows overwriting a non-empty destination directory.
+	 * By default, emde will throw an error if the destination is not empty.
+	 * @default false
+	 */
 	force?: boolean;
 }
 
@@ -44,45 +53,173 @@ const FALLBACK_LAYOUT_EJS = `<% const { page, _pages, _helpers } = props;  %>
 	<body><main><%= page.html %></main></body>
 </html>`;
 
+/**
+ * Internal representation of page information during processing.
+ * @internal
+ */
 export interface RawPageInfo {
+	/** Relative path from source root */
 	relPath: string;
+	/** Absolute filesystem path */
 	path: string;
+	/** Parent page path or null for root */
 	parent: string | null;
+	/** Merged metadata from frontmatter and meta.yaml files */
 	meta: Record<string, any>;
+	/** Raw markdown content (without frontmatter) */
 	content: string;
+	/** Parsed HTML output from markdown */
 	html: string;
+	/** Hierarchy depth (0 for root) */
 	depth: number;
 }
 
+/**
+ * Represents a page in the generated site.
+ *
+ * This is the primary interface you'll work with in templates. Each page contains
+ * its metadata, content, and relationships to other pages in the hierarchy.
+ *
+ * @example
+ * ```ejs
+ * <h1><%= page.meta.title %></h1>
+ * <p>Depth: <%= page.depth %></p>
+ * <% if (page.parent) { %>
+ *   <a href="<%= _helpers.relative(page.path, page.parent.path) %>/">Back</a>
+ * <% } %>
+ * ```
+ */
 export interface Page extends Omit<RawPageInfo, "relPath" | "parent" | "html"> {
+	/** Reference to the parent page, or null for the root page */
 	parent: Page | null;
 }
 
-interface Helpers extends Record<string, any> {
+/**
+ * Built-in and custom helper functions available in templates.
+ *
+ * These helpers are accessible via `_helpers` in your layout templates.
+ * Custom helpers from `helpers.js` files are merged into this object.
+ */
+export interface Helpers extends Record<string, any> {
+	/** Lodash library */
 	_: typeof _;
+	/** Platform-specific path separator */
 	SEPARATOR: string;
-	ItemCollection: ItemCollection<any>;
+	/** ItemCollection utility class */
+	ItemCollection: typeof ItemCollection;
+	/** Returns array of pages from root to current page */
 	breadcrumbs: typeof breadcrumbs;
+	/** Returns array of direct child pages */
 	children: typeof children;
+	/** Returns a minimal CSS reset string */
 	reboot: typeof reboot;
+	/** Calculates relative path between two page paths */
 	relative: typeof relative;
+	/** Returns array of sibling pages (same parent) */
 	siblings: typeof siblings;
+	/** Generates HTML sitemap navigation */
 	sitemap: typeof sitemap;
+	/** Query selector helper for working with HTML strings */
 	qsa: typeof qsa;
 }
 
+/**
+ * A path-indexed map of all pages in the site.
+ *
+ * Keys are page paths (e.g., "/", "/about", "/blog/post-1").
+ */
 export interface Pages extends Record<string, Page> {}
 
+/**
+ * The props object passed to layout templates.
+ *
+ * This is the main context available in your `layout.ejs` templates via the `props` variable.
+ *
+ * @example
+ * ```ejs
+ * <% const { page, root, parent, _pages, _helpers } = props; %>
+ * <!DOCTYPE html>
+ * <html>
+ *   <head><title><%= page.meta.title %></title></head>
+ *   <body>
+ *     <nav><%= _helpers.sitemap(props) %></nav>
+ *     <main><%= page.html %></main>
+ *   </body>
+ * </html>
+ * ```
+ */
 export interface Props {
+	/** The currently rendered page */
 	page: Page;
+	/** The root page (at "/"), or null if not available */
 	root: Page | null;
+	/** The parent of the current page, or null for root */
 	parent: Page | null;
+	/** Map of all pages indexed by their path */
 	_pages: Pages;
+	/** Helper functions for use in templates */
 	_helpers: Helpers;
 }
 
 /**
- * Will generate static html files in the `destDir` from the source markdown files in `srcDir`.
+ * Generates a static HTML site from markdown source files.
+ *
+ * This is the main entry point for the emde static site generator. It processes
+ * a directory of markdown files and generates corresponding HTML files using
+ * customizable layouts and helpers.
+ *
+ * ## Directory Structure
+ *
+ * Each page is represented by a directory containing an `index.md` file:
+ * ```
+ * src/
+ * ├── index.md           # Root page (/)
+ * ├── meta.yaml           # Optional: shared metadata for all pages
+ * ├── layout.ejs          # Optional: custom layout template
+ * ├── helpers.js          # Optional: custom template helpers
+ * ├── about/
+ * │   └── index.md       # /about page
+ * └── blog/
+ *     ├── index.md       # /blog page
+ *     ├── meta.yaml       # Optional: metadata for blog section
+ *     └── first-post/
+ *         └── index.md   # /blog/first-post page
+ * ```
+ *
+ * ## Special Files
+ *
+ * - `index.md` - Required. Page content with optional YAML frontmatter.
+ * - `meta.yaml` - Optional. Metadata merged from root to leaf (leaf wins).
+ * - `layout.ejs` - Optional. EJS template using lodash syntax. Inherits from parent.
+ * - `helpers.js` - Optional. Custom helper functions merged from root to leaf.
+ *
+ * ## Hidden Content
+ *
+ * Directories starting with `_` or `.` are excluded from the output.
+ * The `node_modules` directory is always ignored.
+ *
+ * @param srcDir - Source directory containing markdown files
+ * @param destDir - Destination directory for generated HTML files
+ * @param options - Optional configuration options
+ * @returns Promise resolving to the absolute path of the destination directory
+ *
+ * @throws {TypeError} If source directory doesn't exist
+ * @throws {TypeError} If destination is inside source directory
+ * @throws {TypeError} If destination is not empty (unless `force: true`)
+ *
+ * @example
+ * ```ts
+ * import { emde } from "@marianmeres/emde";
+ *
+ * // Basic usage
+ * await emde("./src", "./dist");
+ *
+ * // With options
+ * await emde("./src", "./dist", {
+ *   verbose: true,
+ *   force: true
+ * });
+ * ```
  */
 export async function emde(
 	srcDir: string,
