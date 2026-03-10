@@ -1,5 +1,8 @@
 # @marianmeres/emde
 
+[![JSR](https://jsr.io/badges/@marianmeres/emde)](https://jsr.io/@marianmeres/emde)
+[![License](https://img.shields.io/github/license/marianmeres/emde)](LICENSE)
+
 Simple, directory-based, markdown-to-HTML static site generator for Deno.
 
 Works out-of-the-box with no configuration, while still being fully extensible when needed.
@@ -173,132 +176,15 @@ Use in templates:
 <p><%= _helpers.truncate(page.meta.description, 150) %></p>
 ```
 
-## Template Props
+## API
 
-The `props` object passed to layout templates:
-
-```ts
-interface Props {
-  page: Page;              // Currently rendered page
-  root: Page | null;       // Root page (at "/")
-  parent: Page | null;     // Parent of current page
-  _pages: Record<string, Page>;  // All pages by path
-  _helpers: Helpers;       // Helper functions
-}
-
-interface Page {
-  path: string;            // e.g., "/blog/first-post"
-  parent: Page | null;     // Parent page reference
-  meta: Record<string, any>;  // Merged frontmatter + meta.yaml
-  content: string;         // Raw markdown (without frontmatter)
-  depth: number;           // Hierarchy level (0 for root)
-}
-```
-
-## Built-in Helpers
-
-All helpers are available via `_helpers` in templates:
-
-### `breadcrumbs(props)`
-
-Returns array of pages from root to current page.
-
-```ejs
-<nav aria-label="Breadcrumb">
-  <ol>
-    <% _helpers.breadcrumbs(props).forEach((crumb, i, arr) => { %>
-      <li>
-        <% if (i < arr.length - 1) { %>
-          <a href="<%= _helpers.relative(page.path, crumb.path) %>/"><%= crumb.meta.title %></a>
-        <% } else { %>
-          <span aria-current="page"><%= crumb.meta.title %></span>
-        <% } %>
-      </li>
-    <% }); %>
-  </ol>
-</nav>
-```
-
-### `children(props)`
-
-Returns array of direct child pages.
-
-```ejs
-<% const kids = _helpers.children(props); %>
-<% if (kids.length) { %>
-  <h2>In this section</h2>
-  <ul>
-    <% kids.forEach((child) => { %>
-      <li><a href="<%= _helpers.relative(page.path, child.path) %>/"><%= child.meta.title %></a></li>
-    <% }); %>
-  </ul>
-<% } %>
-```
-
-### `siblings(props)`
-
-Returns array of sibling pages (same parent, excluding current).
-
-```ejs
-<% const sibs = _helpers.siblings(props); %>
-<% if (sibs.length) { %>
-  <h2>See also</h2>
-  <ul>
-    <% sibs.forEach((sib) => { %>
-      <li><a href="<%= _helpers.relative(page.path, sib.path) %>/"><%= sib.meta.title %></a></li>
-    <% }); %>
-  </ul>
-<% } %>
-```
-
-### `sitemap(props, config?)`
-
-Generates hierarchical HTML sitemap with nested `<ul>/<li>/<a>` elements.
-
-```ejs
-<!-- Basic usage -->
-<nav><%= _helpers.sitemap(props) %></nav>
-
-<!-- With CSS classes -->
-<%= _helpers.sitemap(props, {
-  ulClass: 'nav-list',
-  liClass: 'nav-item',
-  aClass: 'nav-link'
-}) %>
-```
-
-### `relative(fromPath, toPath)`
-
-Calculates relative path between two page paths.
-
-```ejs
-<a href="<%= _helpers.relative(page.path, '/about') %>/">About</a>
-<a href="<%= _helpers.relative(page.path, parent.path) %>/">Back</a>
-```
-
-### `reboot()`
-
-Returns Bootstrap Reboot v5.3.7 CSS as a minified string.
-
-```ejs
-<style><%= _helpers.reboot() %></style>
-```
-
-### Additional Available Objects
-
-- `_` - Full lodash library
-- `SEPARATOR` - Platform path separator
-- `ItemCollection` - [@marianmeres/item-collection](https://github.com/marianmeres/item-collection)
+See [API.md](API.md) for complete API documentation including template props, built-in
+helpers, types, and CLI reference.
 
 ## Hidden Content
 
-Directories starting with `_` or `.` are excluded from the output. Use this for:
-
-- Draft content (`_drafts/`)
-- Private notes (`_notes/`)
-- Hidden sections (`.hidden/`)
-
-The `node_modules` directory is always excluded.
+Directories starting with `_` or `.` are excluded from the output. Use this for
+drafts, private notes, or hidden sections. The `node_modules` directory is always excluded.
 
 ## Example
 
@@ -309,25 +195,6 @@ To build the example:
 
 ```sh
 deno task build:example
-```
-
-## Utilities
-
-The package also exports a frontmatter parser:
-
-```ts
-import { parseFrontMatter } from "@marianmeres/emde";
-
-const result = parseFrontMatter(`---
-title: Hello
-date: 2024-01-15
----
-
-# Content here
-`);
-
-console.log(result.meta);    // { title: "Hello", date: "2024-01-15" }
-console.log(result.content); // "# Content here"
 ```
 
 ## Limitations
