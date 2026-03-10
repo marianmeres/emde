@@ -7,7 +7,11 @@
 	},
 	"tasks": {
 		"test": "deno test -A --watch",
-		"build:example": "deno run -A src/cli.ts --indir example/src --outdir example/dist --force --verbose"
+		"build:example": "deno run -A src/cli.ts --indir example/src --outdir example/dist --force --verbose",
+		"release": "deno run -A jsr:@marianmeres/deno-release",
+		"publish": "deno publish",
+		"rp": "deno task release -y && deno task publish",
+		"rpm": "deno task release minor -y && deno task publish"
 	},
 	"imports": {
 		"@marianmeres/item-collection": "jsr:@marianmeres/item-collection@^1.3.5",
