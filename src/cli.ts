@@ -1,3 +1,9 @@
+/**
+ * @module
+ * CLI entry point for the emde static site generator.
+ * Parses command-line arguments and runs the build pipeline.
+ */
+
 import { parseArgs } from "@std/cli";
 import { bold, dim, red } from "@std/fmt/colors";
 import { emde } from "./mod.ts";
