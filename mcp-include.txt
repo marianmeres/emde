@@ -1,0 +1,1 @@
+Static site generator that converts a directory tree of index.md files (with YAML frontmatter, EJS/lodash templates, hierarchical layouts and metadata merging) into a flat set of HTML pages. Provides a CLI and a programmatic API.
