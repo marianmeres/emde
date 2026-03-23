@@ -1,6 +1,6 @@
 <% 
 	const { page, root, parent, _helpers, _pages } = props; 
-	const { relative, children, reboot, siblings, breadcrumbs } = _helpers;
+	const { relative, children, reboot, siblings, breadcrumbs, versionHash } = _helpers;
 
 	const is_not_sitemap = (p) => p.path !== '/sitemap';
 	const self = page;
@@ -26,7 +26,6 @@
 			.container {
 				max-width: 66ch;
 				margin: 0 auto;
-				background: white;
 			}
 			ul.breadcrumbs {
 				display: inline;
@@ -40,6 +39,7 @@
 				}
 			}
 		</style>
+		<script src="<%= relative(self.path, '/') %>/theme-switch.js?v=<%= versionHash() %>"></script>
 		<script defer src="https://assets.onedollarstats.com/stonks.js"></script>
 	</head>
 	<body>
@@ -88,7 +88,10 @@
 				</nav>
 			<% } %>
 			<hr />
-			<p><a href="<%= relative(self.path, '/sitemap') %>/">Sitemap</a></p>
+			<p>
+				<a href="<%= relative(self.path, '/sitemap') %>/">Sitemap</a>
+				| <button onclick="__emdeTheme.toggle()">Toggle theme</button>
+			</p>
 		</div>
 	</body>
 </html>

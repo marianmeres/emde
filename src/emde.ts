@@ -18,6 +18,7 @@ import { hreflang } from "./template-helpers/hreflang.ts";
 import { jsonLd } from "./template-helpers/json-ld.ts";
 import { seoMeta } from "./template-helpers/seo.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
+import { versionHash } from "./template-helpers/version-hash.ts";
 import { tokens, tokensWithReboot } from "./template-helpers/tokens.ts";
 
 /**
@@ -113,6 +114,8 @@ export interface Helpers extends Record<string, any> {
 	ItemCollection: typeof ItemCollection;
 	/** Returns array of pages from root to current page */
 	breadcrumbs: typeof breadcrumbs;
+	/** Returns a short hash for cache-busting static asset URLs */
+	versionHash: typeof versionHash;
 	/** Returns array of direct child pages */
 	children: typeof children;
 	/** Generates hreflang alternate link tags for multilanguage pages */
@@ -358,6 +361,7 @@ export async function emde(
 							ItemCollection,
 							SEPARATOR,
 							breadcrumbs,
+							versionHash,
 							children,
 							hreflang,
 							jsonLd,
