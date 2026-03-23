@@ -25,7 +25,7 @@
     "@std/path": "jsr:@std/path@^1.1.4",
     "@std/yaml": "jsr:@std/yaml@^1.0.12",
     "lodash": "npm:lodash@^4.17.23",
-    "marked": "npm:marked@^17.0.4"
+    "marked": "npm:marked@^17.0.5"
   },
   "fmt": {
     "useTabs": true,

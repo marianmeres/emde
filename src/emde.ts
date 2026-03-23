@@ -14,6 +14,9 @@ import { reboot } from "./template-helpers/reboot.ts";
 import { relative } from "./template-helpers/relative.ts";
 import { siblings } from "./template-helpers/siblings.ts";
 import { parseFrontMatter } from "./utils/frontmatter.ts";
+import { hreflang } from "./template-helpers/hreflang.ts";
+import { jsonLd } from "./template-helpers/json-ld.ts";
+import { seoMeta } from "./template-helpers/seo.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
 
 /**
@@ -111,10 +114,16 @@ export interface Helpers extends Record<string, any> {
 	breadcrumbs: typeof breadcrumbs;
 	/** Returns array of direct child pages */
 	children: typeof children;
+	/** Generates hreflang alternate link tags for multilanguage pages */
+	hreflang: typeof hreflang;
+	/** Generates JSON-LD structured data (BreadcrumbList) */
+	jsonLd: typeof jsonLd;
 	/** Returns a minimal CSS reset string */
 	reboot: typeof reboot;
 	/** Calculates relative path between two page paths */
 	relative: typeof relative;
+	/** Generates SEO meta tags (title, description, OG, Twitter Card) */
+	seoMeta: typeof seoMeta;
 	/** Returns array of sibling pages (same parent) */
 	siblings: typeof siblings;
 	/** Generates HTML sitemap navigation */
@@ -345,8 +354,11 @@ export async function emde(
 							SEPARATOR,
 							breadcrumbs,
 							children,
+							hreflang,
+							jsonLd,
 							reboot,
 							relative,
+							seoMeta,
 							siblings,
 							sitemap,
 							qsa,
