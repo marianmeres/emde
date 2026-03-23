@@ -18,6 +18,7 @@ import { hreflang } from "./template-helpers/hreflang.ts";
 import { jsonLd } from "./template-helpers/json-ld.ts";
 import { seoMeta } from "./template-helpers/seo.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
+import { tokens, tokensWithReboot } from "./template-helpers/tokens.ts";
 
 /**
  * Configuration options for the emde static site generator.
@@ -130,6 +131,10 @@ export interface Helpers extends Record<string, any> {
 	sitemap: typeof sitemap;
 	/** Query selector helper for working with HTML strings */
 	qsa: typeof qsa;
+	/** Generates CSS custom properties from a design token theme schema */
+	tokens: typeof tokens;
+	/** Generates CSS custom properties + Bootstrap Reboot bridge variables */
+	tokensWithReboot: typeof tokensWithReboot;
 }
 
 /**
@@ -362,6 +367,8 @@ export async function emde(
 							siblings,
 							sitemap,
 							qsa,
+							tokens,
+							tokensWithReboot,
 							...(await _collectHelpers(relPath, tempDir)),
 						},
 					});

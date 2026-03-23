@@ -2,7 +2,7 @@
 
 ## Quick Reference
 - **Stack**: Deno, TypeScript
-- **Test**: `deno task test` | **Build example**: `deno task build:example`
+- **Test**: `deno task test` | **Build example**: `deno task example:build`
 - **Exports**: `./src/mod.ts` (main), `./src/cli.ts` (CLI)
 
 ## Project Structure

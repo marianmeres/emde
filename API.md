@@ -133,6 +133,8 @@ interface Helpers extends Record<string, any> {
   sitemap: (props: Props, config?: Partial<SitemapOpts>) => string;
   relative: (fromPath: string, toPath: string) => string;
   reboot: () => string;
+  tokens: (schema: ThemeSchema, prefix: string) => string;
+  tokensWithReboot: (schema: ThemeSchema, prefix: string) => string;
   qsa: (selector: string, context?: any) => any[];
 }
 ```
@@ -212,6 +214,30 @@ Returns Bootstrap Reboot v5.3.7 CSS as a minified string.
 ```ejs
 <style><%= _helpers.reboot() %></style>
 ```
+
+### `tokens(schema, prefix)`
+
+Generates CSS custom properties from a design token schema. Uses [@marianmeres/design-tokens](https://jsr.io/@marianmeres/design-tokens).
+
+- `schema` (`ThemeSchema`) — Token schema with `light` (required) and optional `dark` mode
+- `prefix` (`string`) — CSS variable prefix (e.g. `"site-"`, `"my-"`)
+
+Returns a CSS string with `:root { ... }` and optional `:root.dark { ... }` blocks.
+
+```ejs
+<style><%= _helpers.tokens(myTheme, "site-") %></style>
+```
+
+### `tokensWithReboot(schema, prefix)`
+
+Same as `tokens()` but also maps design tokens to Bootstrap Reboot's `--bs-*` variables (`--bs-body-color`, `--bs-link-color-rgb`, `--bs-border-color`, etc.). Use when your layout includes `_helpers.reboot()`.
+
+```ejs
+<style><%= _helpers.reboot() %></style>
+<style><%= _helpers.tokensWithReboot(myTheme, "site-") %></style>
+```
+
+See [README.md](README.md#design-tokens) for the full token schema structure and examples.
 
 ### `qsa(selector, context?)`
 
