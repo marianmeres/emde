@@ -1,8 +1,8 @@
 import { ItemCollection } from "@marianmeres/item-collection";
 import { deepMerge } from "@std/collections";
 import { encodeBase64 } from "@std/encoding";
-import { dim, green, red, yellow } from "@std/fmt/colors";
-import { copySync, existsSync, moveSync, walkSync } from "@std/fs";
+import { dim, green, red } from "@std/fmt/colors";
+import { copySync, emptyDirSync, ensureDirSync, existsSync, walkSync } from "@std/fs";
 import { isAbsolute, join, normalize, SEPARATOR } from "@std/path";
 import { parse as parseYaml } from "@std/yaml";
 import _ from "lodash";
@@ -20,6 +20,9 @@ import { seoMeta } from "./template-helpers/seo.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
 import { versionHash } from "./template-helpers/version-hash.ts";
 import { tokens, tokensWithReboot } from "./template-helpers/tokens.ts";
+import { htmlHead } from "./template-helpers/html-head.ts";
+import { htmlShell } from "./template-helpers/html-shell.ts";
+import { BUILT_IN_LAYOUTS_DIR } from "./built-in-layouts/mod.ts";
 
 /**
  * Configuration options for the emde static site generator.
@@ -36,6 +39,21 @@ export interface EmdeOptions {
 	 * @default false
 	 */
 	force?: boolean;
+	/**
+	 * Directories containing `.ejs` layout files, resolved by name from `meta.layout`.
+	 *
+	 * When a page specifies `layout: docs` in its metadata, emde will look for
+	 * `docs.ejs` in these directories (left-to-right priority), then in the
+	 * built-in layouts directory.
+	 *
+	 * @example
+	 * ```ts
+	 * await emde("src", "dist", {
+	 *   layouts: ["./my-layouts", "/shared/emde-layouts"]
+	 * });
+	 * ```
+	 */
+	layouts?: string[];
 }
 
 // required to consider the given directory as content
@@ -138,6 +156,10 @@ export interface Helpers extends Record<string, any> {
 	tokens: typeof tokens;
 	/** Generates CSS custom properties + Bootstrap Reboot bridge variables */
 	tokensWithReboot: typeof tokensWithReboot;
+	/** Generates inner content of a `<head>` element */
+	htmlHead: typeof htmlHead;
+	/** Generates a complete HTML document shell */
+	htmlShell: typeof htmlShell;
 }
 
 /**
@@ -246,15 +268,24 @@ export async function emde(
 	srcDir = _normalize(srcDir);
 	destDir = _normalize(destDir);
 
+	if (destDir === srcDir) {
+		throw new TypeError(`Destination cannot equal source`);
+	}
 	if (destDir.startsWith(srcDir + SEPARATOR)) {
 		throw new TypeError(`Destination cannot be located under source`);
+	}
+	if (srcDir.startsWith(destDir + SEPARATOR)) {
+		throw new TypeError(`Source cannot be located under destination`);
 	}
 
 	if (!existsSync(srcDir, { isDirectory: true })) {
 		throw new TypeError(`Source directory not found ("${srcDir}")`);
 	}
 
-	const { verbose = true, force = false } = options ?? {};
+	const { verbose = true, force = false, layouts = [] } = options ?? {};
+
+	// Normalize layout directories to absolute paths
+	const layoutDirs = layouts.map((d) => _normalize(d));
 
 	// is the dest empty?
 	if (!force && !_isDirEmptySync(destDir)) {
@@ -293,6 +324,10 @@ export async function emde(
 			}
 		}
 
+		// Per-page errors are collected and surfaced once at the end so the build
+		// fails loudly (CI-friendly) rather than silently dropping broken pages.
+		const errors: Array<{ relPath: string; stage: string; error: Error }> = [];
+
 		// 3. read the known (and not hidden) content dirs info
 		const info: Record<string, RawPageInfo> = {};
 		for (const pageDir of pageDirs) {
@@ -301,7 +336,7 @@ export async function emde(
 				// read actual content
 				const md = Deno.readTextFileSync(join(pageDir, FILENAME_INDEX));
 				const parsed = parseFrontMatter(md);
-				const html = marked(parsed.content) as string;
+				const html = marked.parse(parsed.content, { async: false });
 				const meta = _collectMeta(relPath, tempDir) ?? {};
 
 				info[relPath] = {
@@ -318,6 +353,7 @@ export async function emde(
 						: _normalizeSlash(_removeLastSegment(relPath)),
 				};
 			} catch (e: any) {
+				errors.push({ relPath, stage: "info", error: e });
 				console.log(red(` ✘ ${relPath} (info stage)`));
 				console.error(red(`   ${e}`));
 				console.debug(dim(e.stack?.split("\n").slice(1).join("\n")));
@@ -345,14 +381,18 @@ export async function emde(
 		// console.log(_pages);
 
 		// 4. generate (write) the static index.html
+		// Cache helper modules across pages — same file shouldn't be base64+imported per-page.
+		const helpersCache = new Map<string, any>();
 		for (const [relPath, row] of Object.entries(info)) {
+			// _pages is keyed by forward-slash paths; normalize for cross-platform lookup
+			const pageKey = _normalizeSlash(relPath)!;
 			try {
-				const layout = _getLayout(relPath, tempDir);
+				const layout = _getLayout(relPath, tempDir, row.meta, layoutDirs);
 
 				let html = row.html;
 				if (layout) {
 					html = layout({
-						page: _pages[relPath],
+						page: _pages[pageKey],
 						parent: row.parent === null ? null : _pages[row.parent],
 						root: _pages["/"] ?? null,
 						_pages,
@@ -373,7 +413,9 @@ export async function emde(
 							qsa,
 							tokens,
 							tokensWithReboot,
-							...(await _collectHelpers(relPath, tempDir)),
+							htmlHead,
+							htmlShell,
+							...(await _collectHelpers(relPath, tempDir, helpersCache)),
 						},
 					});
 				}
@@ -384,6 +426,7 @@ export async function emde(
 
 				verbose && console.log(green(` ✔ ${relPath}`));
 			} catch (e: any) {
+				errors.push({ relPath, stage: "generation", error: e });
 				console.log(red(` ✘ ${relPath} (generation stage)`));
 				console.error(red(`   ${e}`));
 				console.debug(dim(e.stack?.split("\n").slice(1).join("\n")));
@@ -395,20 +438,38 @@ export async function emde(
 			_removeSyncIfExists(dir);
 		}
 
-		// 6. "system" files cleanup...
+		// 6. "system" files cleanup — collect unique target paths first to avoid
+		//    re-trying the same delete N×D×3 times in deep trees with many leaves.
+		const systemFiles = new Set<string>();
 		for (const pageDir of pageDirs) {
 			const relPath = pageDir.slice(tempDir.length) || SEPARATOR;
-			_collectParentDirs(relPath).forEach((dir: string) => {
-				[FILENAME_META, FILENAME_LAYOUT, FILENAME_HELPERS].forEach(
-					(file: string) => {
-						_removeSyncIfExists(join(tempDir, dir, file));
-					},
-				);
-			});
+			for (const dir of _collectParentDirs(relPath)) {
+				for (const file of [FILENAME_META, FILENAME_LAYOUT, FILENAME_HELPERS]) {
+					systemFiles.add(join(tempDir, dir, file));
+				}
+			}
+		}
+		for (const filePath of systemFiles) {
+			_removeSyncIfExists(filePath);
 		}
 
-		// 7. final move the result to dest (this effectively cleans up the temp)
-		moveSync(tempDir, destDir, { overwrite: true });
+		// 7. publish: empty destDir then copy temp contents in.
+		// Preserves destDir's inode (so file-watchers / symlinks / mount points
+		// remain valid), unlike a naive moveSync over an existing dir.
+		ensureDirSync(destDir);
+		emptyDirSync(destDir);
+		copySync(tempDir, destDir, { overwrite: true });
+
+		// 8. surface per-page failures so callers (CI, scripts) can react
+		if (errors.length) {
+			const summary = errors
+				.map((e) => `  - ${e.relPath} (${e.stage}): ${e.error.message ?? e.error}`)
+				.join("\n");
+			throw new AggregateError(
+				errors.map((e) => e.error),
+				`emde: ${errors.length} page(s) failed:\n${summary}`,
+			);
+		}
 
 		return destDir;
 	} catch (e) {
@@ -428,7 +489,12 @@ function _collectParentDirs(relPath: string): string[] {
 	return [...out];
 }
 
-function _getLayout(relPath: string, srcRoot: string): CallableFunction {
+function _getLayout(
+	relPath: string,
+	srcRoot: string,
+	meta?: Record<string, any>,
+	layoutDirs?: string[],
+): CallableFunction {
 	const _readLayout = (filename: string) => {
 		try {
 			return _ejsCompile(Deno.readTextFileSync(filename));
@@ -440,65 +506,104 @@ function _getLayout(relPath: string, srcRoot: string): CallableFunction {
 		return null;
 	};
 
+	// 1. Walk source tree for layout.ejs (user's file always wins).
+	// Cascade: deepest layout.ejs wins; otherwise inherit from any ancestor up to root.
 	let path = relPath;
-	do {
-		const layout = _readLayout(join(srcRoot, relPath, FILENAME_LAYOUT));
+	while (true) {
+		const layout = _readLayout(join(srcRoot, path, FILENAME_LAYOUT));
 		if (layout) return layout;
+		if (path === SEPARATOR || path === "") break;
 		path = _removeLastSegment(path);
-	} while (path && path !== SEPARATOR);
+	}
 
-	// handle root
-	return (
-		_readLayout(join(srcRoot, "", FILENAME_LAYOUT)) ??
-			_ejsCompile(FALLBACK_LAYOUT_EJS)
-	);
+	// 2. If meta.layout is set, resolve by name from layout directories
+	if (meta?.layout && typeof meta.layout === "string") {
+		const name = meta.layout;
+
+		// Search external layout dirs first (left-to-right priority)
+		for (const dir of layoutDirs ?? []) {
+			const layout = _readLayout(join(dir, `${name}.ejs`));
+			if (layout) return layout;
+		}
+
+		// Then built-in layouts dir
+		const builtIn = _readLayout(
+			join(BUILT_IN_LAYOUTS_DIR, `${name}.ejs`),
+		);
+		if (builtIn) return builtIn;
+
+		const searched = [...(layoutDirs ?? []), BUILT_IN_LAYOUTS_DIR]
+			.join(", ");
+		throw new Error(
+			`Layout "${meta.layout}" not found. Searched: ${searched}`,
+		);
+	}
+
+	// 3. Fallback
+	return _ejsCompile(FALLBACK_LAYOUT_EJS);
 }
 
-async function _collectHelpers(relPath: string, srcRoot: string) {
+async function _loadHelpersFile(
+	helpersFile: string,
+	cache: Map<string, any>,
+): Promise<any> {
+	if (cache.has(helpersFile)) return cache.get(helpersFile);
+	let imported: any = null;
+	if (existsSync(helpersFile)) {
+		// Data URI workaround: file:// dynamic imports are restricted on Deno Deploy.
+		// See https://docs.deno.com/deploy/api/dynamic-import/
+		const jsSource = encodeBase64(Deno.readTextFileSync(helpersFile));
+		imported = await import(`data:text/javascript;base64,${jsSource}`);
+	}
+	cache.set(helpersFile, imported);
+	return imported;
+}
+
+async function _collectHelpers(
+	relPath: string,
+	srcRoot: string,
+	cache: Map<string, any>,
+) {
 	let helpers: any = {};
+	const seen = new Set<string>();
 
-	const _import = async (_relPath: string) => {
-		const helpersFile = join(srcRoot, _relPath, FILENAME_HELPERS);
-		if (existsSync(helpersFile)) {
-			// const imported = await import(helpersFile);
-			// https://docs.deno.com/deploy/api/dynamic-import/
-			const jsSource = encodeBase64(Deno.readTextFileSync(helpersFile));
-			const imported = await import(`data:text/javascript;base64,${jsSource}`);
-			helpers = { ...(imported || {}), ...helpers };
-		}
-		return helpers;
-	};
-
+	// Walk leaf → root; deeper helpers override shallower ones (deeper imported first,
+	// becomes "existing", later spreads put new keys at the head and let existing win).
 	let path = relPath;
-	do {
-		helpers = await _import(path);
+	while (true) {
+		// Use the resolved absolute path as the dedupe key so root isn't visited twice.
+		const helpersFile = join(srcRoot, path, FILENAME_HELPERS);
+		if (!seen.has(helpersFile)) {
+			seen.add(helpersFile);
+			const imported = await _loadHelpersFile(helpersFile, cache);
+			if (imported) {
+				helpers = { ...imported, ...helpers };
+			}
+		}
+		if (path === SEPARATOR || path === "") break;
 		path = _removeLastSegment(path);
-	} while (path && path !== SEPARATOR);
-
-	helpers = await _import("");
-	// console.log(helpers);
+	}
 
 	return helpers;
 }
 
 function _collectMeta(relPath: string, srcRoot: string): Record<string, any> {
 	let config: Record<string, any> = {};
+	const seen = new Set<string>();
 
 	let path = relPath;
-	do {
-		// we going from leaf to root, the leafs must overwrite the root
-		config = deepMerge(
-			_parseYamlFileSyncIfExists(join(srcRoot, path, FILENAME_META)),
-			config,
-		);
+	while (true) {
+		const metaFile = join(srcRoot, path, FILENAME_META);
+		if (!seen.has(metaFile)) {
+			seen.add(metaFile);
+			// Going from leaf to root; leafs must overwrite the root.
+			config = deepMerge(_parseYamlFileSyncIfExists(metaFile), config);
+		}
+		if (path === SEPARATOR || path === "") break;
 		path = _removeLastSegment(path);
-	} while (path && path !== SEPARATOR);
+	}
 
-	// handle root
-	return deepMerge(
-		_parseYamlFileSyncIfExists(join(srcRoot, "", FILENAME_META)),
-		config,
-	);
+	return config;
 }
 
 function _isValidContentDir(dir: string): boolean {
@@ -520,14 +625,14 @@ function _normalize(dir: string): string {
 	return dir;
 }
 
-// is this optimal?
 function _isDirEmptySync(dir: string): boolean {
-	let counter = 0;
-	for (const dirEntry of walkSync(dir)) {
-		if (dirEntry.path !== dir) counter++;
-		if (counter) return false;
+	try {
+		for (const _ of Deno.readDirSync(dir)) return false;
+		return true;
+	} catch (error) {
+		if (error instanceof Deno.errors.NotFound) return true;
+		throw error;
 	}
-	return true;
 }
 
 function _ejsCompile(ejs: string): CallableFunction {
@@ -559,8 +664,12 @@ function _readTextFileSyncIfExists(filename: string): string | undefined {
 function _parseYamlFileSyncIfExists(filename: string): any {
 	try {
 		return parseYaml(_readTextFileSyncIfExists(filename) ?? "") ?? {};
-	} catch (e) {
-		console.warn(yellow(`Unable to yaml parse "${filename}" (${e})`));
+	} catch (e: any) {
+		// Re-throw with the offending filename so the per-page error aggregator
+		// (and any caller) gets useful context instead of an opaque YAML error.
+		throw new Error(`Failed to parse YAML in "${filename}": ${e.message ?? e}`, {
+			cause: e,
+		});
 	}
 }
 

@@ -82,6 +82,47 @@ Deno.test("jsonLd - generates BreadcrumbList for nested page", () => {
 	);
 });
 
+Deno.test("jsonLd - escaped < and > round-trip cleanly through JSON.parse", () => {
+	const props = _makeProps([
+		{ path: "/", title: "Home" },
+		{ path: "/math", title: "5 < 10 & 10 > 5" },
+	]);
+	const html = jsonLd(props, { siteUrl: "https://example.com" });
+
+	// The raw HTML must NOT contain literal < or > inside the JSON body
+	// (only the surrounding <script> tags should contain them).
+	const jsonStr = html
+		.replace(/^<script type="application\/ld\+json">/, "")
+		.replace(/<\/script>$/, "");
+	assertEquals(jsonStr.includes("<"), false);
+	assertEquals(jsonStr.includes(">"), false);
+
+	// JSON.parse must restore the exact original characters.
+	const data = JSON.parse(jsonStr);
+	assertEquals(data.itemListElement[1].name, "5 < 10 & 10 > 5");
+});
+
+Deno.test("jsonLd - escapes </script> safely", () => {
+	const props = _makeProps([
+		{ path: "/", title: "Home" },
+		{ path: "/x", title: "</script><script>alert(1)</script>" },
+	]);
+	const html = jsonLd(props, { siteUrl: "https://example.com" });
+
+	// Must not contain a script-end sequence inside the JSON payload
+	const jsonStr = html
+		.replace(/^<script type="application\/ld\+json">/, "")
+		.replace(/<\/script>$/, "");
+	assertEquals(jsonStr.includes("</script>"), false);
+
+	// And must still parse to the original string.
+	const data = JSON.parse(jsonStr);
+	assertEquals(
+		data.itemListElement[1].name,
+		"</script><script>alert(1)</script>",
+	);
+});
+
 Deno.test("jsonLd - two breadcrumbs (direct child of root)", () => {
 	const props = _makeProps([
 		{ path: "/", title: "Home" },

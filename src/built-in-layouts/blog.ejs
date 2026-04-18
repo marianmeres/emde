@@ -1,0 +1,168 @@
+<%
+const { page, root, parent, _pages, _helpers } = props;
+const { relative, children, siblings, breadcrumbs, htmlHead, versionHash } = _helpers;
+
+const sibs = siblings?.(props) ?? [];
+const childs = children?.(props) ?? [];
+const crumbs = breadcrumbs?.(props) ?? [];
+const siteTitle = root?.meta?.title || 'Blog';
+const isPost = page.depth > 0 && childs.length === 0;
+const date = page.meta?.date || '';
+const author = page.meta?.author || '';
+%>
+<!DOCTYPE html>
+<html lang="<%= page.meta?.lang || 'en' %>">
+<head>
+<%= htmlHead(props, {
+	reboot: true,
+	seo: page.meta?.site || undefined,
+}) %>
+<style><%= _helpers.themeTokens?.(props) || '' %></style>
+<style>
+* { box-sizing: border-box; }
+:root {
+	--b-primary: var(--t-color-primary, #7c3aed);
+	--b-accent: var(--t-color-accent, #f43f5e);
+	--b-bg: var(--t-color-background, #fff);
+	--b-fg: var(--t-color-foreground, #1e293b);
+	--b-muted: var(--t-color-muted, #f8fafc);
+	--b-muted-fg: var(--t-color-muted-foreground, #64748b);
+	--b-border: var(--t-color-border, #e2e8f0);
+	--b-surface: var(--t-color-surface, #f1f5f9);
+}
+body {
+	margin: 0;
+	font-family: 'Georgia', serif;
+	color: var(--b-fg);
+	background: var(--b-bg);
+	line-height: 1.8;
+}
+.b-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 2rem;
+	border-bottom: 1px solid var(--b-border);
+	font-family: system-ui, sans-serif;
+}
+.b-header a { text-decoration: none; color: inherit; font-weight: 600; }
+.b-header-right { display: flex; gap: 1rem; align-items: center; }
+.b-wrap { max-width: 52rem; margin: 0 auto; padding: 0 2rem; }
+.b-breadcrumbs {
+	padding: 1rem 0;
+	font-family: system-ui, sans-serif;
+	font-size: 0.8rem;
+	color: var(--b-muted-fg);
+}
+.b-breadcrumbs a { text-decoration: none; color: var(--b-muted-fg); }
+.b-breadcrumbs a:hover { color: var(--b-primary); }
+.b-article { padding: 1rem 0 3rem; }
+.b-article h1 { font-size: 2rem; font-weight: 400; margin: 0 0 0.5rem; line-height: 1.3; }
+.b-meta {
+	font-family: system-ui, sans-serif;
+	font-size: 0.85rem;
+	color: var(--b-muted-fg);
+	margin-bottom: 2rem;
+	display: flex;
+	gap: 1rem;
+}
+.b-post-list { list-style: none; padding: 0; }
+.b-post-list li {
+	padding: 1.25rem 0;
+	border-bottom: 1px solid var(--b-border);
+}
+.b-post-list a {
+	text-decoration: none;
+	color: inherit;
+	font-size: 1.2rem;
+}
+.b-post-list a:hover { color: var(--b-primary); }
+.b-post-list .b-post-date {
+	display: block;
+	font-family: system-ui, sans-serif;
+	font-size: 0.8rem;
+	color: var(--b-muted-fg);
+	margin-top: 0.25rem;
+}
+.b-related {
+	padding: 2rem 0;
+	border-top: 1px solid var(--b-border);
+	font-family: system-ui, sans-serif;
+}
+.b-related h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--b-muted-fg); margin: 0 0 1rem; }
+.b-related ul { list-style: none; padding: 0; }
+.b-related li { padding: 0.375rem 0; }
+.b-related a { text-decoration: none; color: var(--b-primary); }
+.b-footer {
+	padding: 2rem 0;
+	text-align: center;
+	color: var(--b-muted-fg);
+	font-size: 0.8rem;
+	font-family: system-ui, sans-serif;
+	border-top: 1px solid var(--b-border);
+}
+.b-theme-btn {
+	background: var(--b-muted);
+	border: 1px solid var(--b-border);
+	border-radius: 0.375rem;
+	padding: 0.25rem 0.75rem;
+	cursor: pointer;
+	font-size: 0.75rem;
+	color: var(--b-fg);
+}
+.b-theme-btn:hover { background: var(--b-primary); color: var(--t-color-primary-foreground, #fff); }
+</style>
+<script>
+<%= `// theme-switch v=${versionHash()}` %>
+(function(){var K="emde-theme",r=document.documentElement;function g(){return r.classList.contains("dark")?"dark":"light"}function s(m){m==="dark"?r.classList.add("dark"):r.classList.remove("dark");try{sessionStorage.setItem(K,m)}catch(e){}document.dispatchEvent(new CustomEvent("emde-theme-change",{detail:{mode:m}}))}try{if(sessionStorage.getItem(K)==="dark")r.classList.add("dark")}catch(e){}globalThis.__emdeTheme={toggle:function(){s(g()==="dark"?"light":"dark")},set:s,get:g}})();
+</script>
+</head>
+<body>
+	<header class="b-header">
+		<a href="<%= relative(page.path, '/') %>/"><%= siteTitle %></a>
+		<div class="b-header-right">
+			<button class="b-theme-btn" onclick="__emdeTheme.toggle()">Toggle theme</button>
+		</div>
+	</header>
+	<div class="b-wrap">
+		<% if (crumbs.length > 1) { %>
+			<nav class="b-breadcrumbs">
+				<% for (const [i, p] of crumbs.entries()) { %>
+					<% if (i) { %> &rsaquo; <% } %>
+					<% if (i === crumbs.length - 1) { %><%= p.meta?.title || p.path %><% } else { %><a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a><% } %>
+				<% } %>
+			</nav>
+		<% } %>
+		<main class="b-article">
+			<% if (isPost && (date || author)) { %>
+				<div class="b-meta">
+					<% if (date) { %><span><%= date %></span><% } %>
+					<% if (author) { %><span>by <%= author %></span><% } %>
+				</div>
+			<% } %>
+			<article><%= page.html %></article>
+			<% if (childs.length) { %>
+				<ul class="b-post-list">
+					<% for (const p of childs) { %>
+						<li>
+							<a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a>
+							<% if (p.meta?.date) { %><span class="b-post-date"><%= p.meta.date %></span><% } %>
+						</li>
+					<% } %>
+				</ul>
+			<% } %>
+		</main>
+		<% if (sibs.length) { %>
+			<aside class="b-related">
+				<h3>Related posts</h3>
+				<ul>
+					<% for (const p of sibs) { %>
+						<li><a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a></li>
+					<% } %>
+				</ul>
+			</aside>
+		<% } %>
+		<footer class="b-footer">&copy; <%= new Date().getFullYear() %> <%= siteTitle %></footer>
+	</div>
+</body>
+</html>

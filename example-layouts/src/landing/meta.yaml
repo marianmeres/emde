@@ -1,0 +1,14 @@
+layout: landing
+title: Acme Platform
+tagline: Build faster. Ship smarter. Scale effortlessly.
+ctaText: Start Free Trial
+ctaHref: features/
+features:
+  - title: Lightning Fast
+    description: Sub-millisecond response times powered by edge computing.
+  - title: Fully Extensible
+    description: Plugin architecture that adapts to your workflow.
+  - title: Enterprise Ready
+    description: SOC2 compliant with role-based access control built in.
+site:
+  siteName: Acme Platform

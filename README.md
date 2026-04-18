@@ -12,8 +12,10 @@ Works out-of-the-box with no configuration, while still being fully extensible w
 - Zero configuration required
 - Directory-based page structure
 - YAML frontmatter and `meta.yaml` support with hierarchical merging
-- Customizable layouts using lodash/EJS templates
-- Built-in template helpers for navigation, breadcrumbs, sitemaps
+- Customizable layouts using lodash/EJS templates, with cascade up the directory tree
+- Built-in layouts (`blog`, `docs`, `landing`, `minimal`, `news`, `personal`, `storefront`)
+- Built-in template helpers for navigation, breadcrumbs, sitemaps, SEO, hreflang, JSON-LD, design tokens, full `<head>` / document shells
+- Watch mode (`--watch`) with debounced, serialized rebuilds
 - Hidden content support (directories starting with `_` or `.`)
 - Automatic `node_modules` exclusion
 
@@ -38,8 +40,10 @@ deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist --verbose
 Options:
 - `--indir` - Source directory containing markdown files (required)
 - `--outdir` - Destination directory for generated HTML (required)
-- `--force` - Overwrite non-empty destination directory
+- `--force` - Empty and rewrite a non-empty destination directory
 - `--verbose` - Show progress for each page
+- `--watch` - Rebuild on file changes in `--indir` and `--layouts` (debounced)
+- `--layouts` - Extra layout directory; repeat for multiple (left-to-right priority)
 
 ### Programmatic Usage
 
@@ -48,7 +52,8 @@ import { emde } from "@marianmeres/emde";
 
 await emde("./src", "./dist", {
   verbose: true,
-  force: true
+  force: true,
+  layouts: ["./my-layouts"], // optional extra dirs searched by `meta.layout` name
 });
 ```
 
@@ -127,7 +132,10 @@ author: Blog Team  # Overrides the default
 ### `layout.ejs` (Optional)
 
 Custom EJS template using [lodash template syntax](https://lodash.com/docs/4.17.15#template).
-Layouts are inherited from parent directories; the closest one to the page is used.
+Layouts cascade from the page's own directory upward to the source root; the closest
+ancestor `layout.ejs` is used. If none is found and `meta.layout: <name>` is set, emde
+looks for `<name>.ejs` in each `options.layouts` directory (left → right) and finally in
+the [built-in layouts](#built-in-layouts).
 
 ```ejs
 <% const { page, root, parent, _pages, _helpers } = props; %>
@@ -146,7 +154,13 @@ Layouts are inherited from parent directories; the closest one to the page is us
 </html>
 ```
 
-If no custom layout is found, a basic default layout is used.
+If no custom layout is found and `meta.layout` is unset, a basic default layout is used.
+
+#### Built-in layouts
+
+Set `layout: <name>` in `meta.yaml` (or page frontmatter) to use one of the bundled
+templates: `blog`, `docs`, `landing`, `minimal`, `news`, `personal`, `storefront`. See
+[`example-layouts/src/`](./example-layouts/src/) for a working showcase of each.
 
 ### `helpers.js` (Optional)
 
@@ -368,10 +382,19 @@ This is a minimal static site generator. If you need:
 - Asset optimization (images, CSS/JS minification)
 - RSS/Atom feed generation
 - Deployment helpers
-- Watch mode / dev server
+- A live-reload dev server (watch mode rebuilds, but does not serve)
 - Incremental builds
 
 ...you should probably use a more full-featured solution.
+
+## Errors and `--force` behavior
+
+- A malformed `meta.yaml` or page frontmatter is fatal. The build throws an
+  `AggregateError` listing each affected page; nothing is silently dropped.
+- `--force` empties `destDir` and writes the new build into it. The directory's inode
+  is preserved (safe for symlinks, mount points, file watchers), but **all
+  pre-existing contents are removed**. Put assets you want to keep (e.g. `CNAME`,
+  static images) inside `srcDir` so they are copied through.
 
 ## License
 

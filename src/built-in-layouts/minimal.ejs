@@ -1,0 +1,9 @@
+<% const { page, _pages, _helpers } = props; %>
+<%= _helpers.htmlShell(props, {
+	lang: page.meta?.lang,
+	reboot: true,
+	tokens: page.meta?.tokens || undefined,
+	seo: page.meta?.site || undefined,
+	css: 'body { padding: 1rem; } main { max-width: 65ch; margin: 0 auto; }',
+	body: '<main>' + page.html + '</main>'
+}) %>

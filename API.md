@@ -13,11 +13,19 @@ Generate a static HTML site from a directory of markdown files.
 
 **Returns:** `Promise<string>` — Path to the generated output directory
 
+**Throws:**
+- `TypeError` — If `srcDir` does not exist, if `destDir` equals `srcDir`, if `destDir` is inside `srcDir`, if `srcDir` is inside `destDir`, or if `destDir` is non-empty and `force` is not set.
+- `AggregateError` — If one or more pages fail to parse or render. The error message lists each failed page with its stage (`info` or `generation`) and the underlying error. Built output is still moved to `destDir`; the throw signals partial failure so CI can react.
+
 **Example:**
 ```ts
 import { emde } from "@marianmeres/emde";
 
-await emde("./src", "./dist", { verbose: true, force: true });
+await emde("./src", "./dist", {
+  verbose: true,
+  force: true,
+  layouts: ["./my-layouts"],
+});
 ```
 
 ---
@@ -70,14 +78,57 @@ Calculate relative path between two page paths.
 ## CLI
 
 ```sh
-deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist
+deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist [options]
 ```
 
 **Flags:**
-- `--indir` — Source directory (required)
-- `--outdir` — Destination directory (required)
-- `--force` — Overwrite non-empty destination
-- `--verbose` — Log progress per page
+- `--indir <path>` — Source directory (required)
+- `--outdir <path>` — Destination directory (required)
+- `--force` — Overwrite a non-empty destination directory
+- `--verbose` — Log each processed page
+- `--watch` — Rebuild on file changes in `--indir` and any `--layouts` paths (debounced 300 ms; rebuilds are serialized)
+- `--layouts <path>` — Extra layout directory; repeat for multiple paths (priority left → right, then built-in)
+- `--help`, `-h` — Show help
+
+**Example:**
+```sh
+deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist \
+  --layouts ./my-layouts --layouts ./shared --force --verbose
+```
+
+---
+
+## Behavior Notes
+
+### Layout resolution order
+
+1. `layout.ejs` in the page's own directory
+2. `layout.ejs` in any ancestor directory, walking up to the source root
+3. If `meta.layout: <name>` is set, look for `<name>.ejs` in each `options.layouts` directory (left → right), then in the built-in layouts directory
+4. Built-in fallback layout
+
+### Metadata merging
+
+`meta.yaml` values cascade root → leaf, with deeper directories taking precedence. Frontmatter on the page itself wins over all `meta.yaml` values.
+
+### Helper merging
+
+`helpers.js` exports cascade root → leaf, with deeper directories taking precedence.
+
+### Strict YAML parsing
+
+A malformed `meta.yaml` (or frontmatter, with `strict: true`) is fatal — the build throws an `AggregateError` listing affected pages. There is no warn-and-continue mode.
+
+### `--force` publish step
+
+When `force: true` (or `--force`), the destination is emptied with `emptyDirSync` and the generated output copied in. The destination directory's inode is preserved (safe for symlinks, mount points, and file watchers). All pre-existing contents of `destDir` are removed; put assets you want preserved (e.g. `CNAME`) inside `srcDir` so they are copied through.
+
+### Built-in layouts
+
+Use `meta.layout: <name>` to opt into a built-in template:
+`blog`, `docs`, `landing`, `minimal`, `news`, `personal`, `storefront`.
+
+The `example-layouts/src/` directory in this repo demonstrates each one.
 
 ---
 
@@ -87,8 +138,9 @@ deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist
 
 ```ts
 interface EmdeOptions {
-  verbose?: boolean;  // Log progress (default: true)
-  force?: boolean;    // Overwrite non-empty dest (default: false)
+  verbose?: boolean;   // Log progress (default: true)
+  force?: boolean;     // Overwrite non-empty dest (default: false)
+  layouts?: string[];  // Extra layout directories searched by name from meta.layout
 }
 ```
 
@@ -100,6 +152,7 @@ interface Page {
   parent: Page | null;           // Parent page reference
   meta: Record<string, any>;     // Merged frontmatter + meta.yaml
   content: string;               // Raw markdown (without frontmatter)
+  html: string;                  // HTML rendered from content
   depth: number;                 // Hierarchy level (0 for root)
 }
 ```
@@ -136,6 +189,12 @@ interface Helpers extends Record<string, any> {
   tokens: (schema: ThemeSchema, prefix: string) => string;
   tokensWithReboot: (schema: ThemeSchema, prefix: string) => string;
   qsa: (selector: string, context?: any) => any[];
+  versionHash: () => string;
+  seoMeta: (props: Props, config?: SeoConfig) => string;
+  hreflang: (props: Props, config?: HreflangConfig) => string;
+  jsonLd: (props: Props, config?: JsonLdConfig) => string;
+  htmlHead: (props: Props, options?: HtmlHeadOptions) => string;
+  htmlShell: (props: Props, options: HtmlShellOptions) => string;
 }
 ```
 
@@ -146,6 +205,68 @@ interface SitemapOpts {
   ulClass: string;  // CSS class for <ul> elements
   liClass: string;  // CSS class for <li> elements
   aClass: string;   // CSS class for <a> elements
+}
+```
+
+### `SeoConfig`
+
+```ts
+interface SeoConfig {
+  siteName?: string;             // og:site_name and title suffix
+  siteUrl?: string;              // canonical base URL, no trailing slash
+  defaultImage?: string;         // fallback OG image
+  twitterHandle?: string;        // @handle
+  titleSuffix?: string;          // overrides siteName as suffix
+  titleSuffixSeparator?: string; // default " | "
+}
+```
+
+### `HreflangConfig`
+
+```ts
+interface HreflangConfig {
+  locales?: string[];       // e.g. ["en", "sk"]; auto-detected from /<locale>/ paths if omitted
+  defaultLocale?: string;   // for x-default; falls back to locales[0]
+  siteUrl?: string;         // if omitted, hrefs are relative
+}
+```
+
+### `JsonLdConfig`
+
+```ts
+interface JsonLdConfig {
+  siteName?: string;
+  siteUrl?: string;  // required for output; otherwise returns ""
+}
+```
+
+### `HtmlHeadOptions`
+
+```ts
+interface HtmlHeadOptions {
+  title?: string;
+  titleSuffix?: string;
+  titleSuffixSeparator?: string;  // default " | "
+  reboot?: boolean;
+  tokens?: { schema: ThemeSchema; prefix: string; withReboot?: boolean };
+  css?: string | string[];        // inline CSS
+  stylesheets?: string[];         // external <link> tags
+  seo?: SeoConfig;
+  hreflang?: HreflangConfig;
+  jsonLd?: JsonLdConfig;
+  scripts?: Array<string | { src: string; defer?: boolean; async?: boolean }>;
+  extra?: string;                  // raw HTML appended at end of <head>
+}
+```
+
+### `HtmlShellOptions`
+
+```ts
+interface HtmlShellOptions extends HtmlHeadOptions {
+  lang?: string;                          // <html lang="...">; defaults to page.meta.lang ?? "en"
+  bodyClass?: string;
+  bodyAttrs?: Record<string, string>;
+  body: string;                           // required body HTML
 }
 ```
 
@@ -238,6 +359,72 @@ Same as `tokens()` but also maps design tokens to Bootstrap Reboot's `--bs-*` va
 ```
 
 See [README.md](README.md#design-tokens) for the full token schema structure and examples.
+
+### `versionHash()`
+
+Returns a short random hash, constant within a single build process. Use as a cache-buster query string for static assets.
+
+```ejs
+<link rel="stylesheet" href="/style.css?v=<%= _helpers.versionHash() %>" />
+<script src="/app.js?v=<%= _helpers.versionHash() %>"></script>
+```
+
+Note: in `--watch` mode all rebuilds within one CLI process share the same hash; restart the process to bump it.
+
+### `seoMeta(props, config?)`
+
+Generates SEO meta tags: `<title>`, description, canonical, Open Graph, Twitter Card. All tags are conditional — missing values produce no empty tags. Reads `page.meta.title`, `description`, `image`, `noindex`, `og:type`.
+
+```ejs
+<head>
+  <%= _helpers.seoMeta(props, { siteName: "MySaaS", siteUrl: "https://example.com" }) %>
+</head>
+```
+
+### `hreflang(props, config?)`
+
+Generates `<link rel="alternate" hreflang="...">` tags for multilanguage sites with `/<locale>/...` URL structure. Only emits tags for locales whose equivalent page actually exists in `_pages`.
+
+```ejs
+<%= _helpers.hreflang(props, { locales: ["en", "sk"], siteUrl: "https://example.com" }) %>
+```
+
+### `jsonLd(props, config?)`
+
+Generates a `<script type="application/ld+json">` `BreadcrumbList` for Google rich results. Requires `siteUrl`. Returns empty string at the root or when no `siteUrl` is provided. JSON content uses `\u003c` / `\u003e` / `\u0026` escapes so any `<`, `>`, `&` in titles round-trips cleanly through `JSON.parse`.
+
+```ejs
+<%= _helpers.jsonLd(props, { siteUrl: "https://example.com" }) %>
+```
+
+### `htmlHead(props, options?)`
+
+Builds the inner content of `<head>`: charset + viewport (always), then conditionally title, SEO, hreflang, JSON-LD, reboot CSS, design tokens, inline CSS, external stylesheets, scripts, and arbitrary extra HTML — only what you explicitly request. Attribute values (URLs in `stylesheets`, `scripts`) are HTML-escaped.
+
+```ejs
+<head>
+  <%= _helpers.htmlHead(props, {
+    reboot: true,
+    seo: { siteName: "My Site", siteUrl: "https://example.com" },
+    tokens: { schema: page.meta.tokens, prefix: "site-" },
+    stylesheets: ["/style.css"],
+    scripts: [{ src: "/app.js", defer: true }]
+  }) %>
+</head>
+```
+
+### `htmlShell(props, options)`
+
+Builds an entire HTML document (`<!DOCTYPE html>` … `</html>`). Delegates the head to `htmlHead`, then wraps `options.body` in a `<body>` with optional class and attributes. `lang` defaults to `page.meta.lang ?? "en"`.
+
+```ejs
+<%= _helpers.htmlShell(props, {
+  reboot: true,
+  seo: { siteName: "My Site" },
+  bodyClass: "page",
+  body: '<main>' + page.html + '</main>'
+}) %>
+```
 
 ### `qsa(selector, context?)`
 

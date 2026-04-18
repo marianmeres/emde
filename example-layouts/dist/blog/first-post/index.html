@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>On Building Static Sites | The Craft Journal</title>
+<meta name="description" content="Why static site generators still matter in 2025." />
+<meta property="og:title" content="On Building Static Sites" />
+<meta property="og:description" content="Why static site generators still matter in 2025." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="The Craft Journal" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="On Building Static Sites" />
+<meta name="twitter:description" content="Why static site generators still matter in 2025." />
+<style>/*!
+     * Bootstrap Reboot v5.3.7 (https://getbootstrap.com/)
+     * Copyright 2011-2025 The Bootstrap Authors
+     * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+     */
+    :root,[data-bs-theme=light]{--bs-blue:#0d6efd;--bs-indigo:#6610f2;--bs-purple:#6f42c1;--bs-pink:#d63384;--bs-red:#dc3545;--bs-orange:#fd7e14;--bs-yellow:#ffc107;--bs-green:#198754;--bs-teal:#20c997;--bs-cyan:#0dcaf0;--bs-black:#000;--bs-white:#fff;--bs-gray:#6c757d;--bs-gray-dark:#343a40;--bs-gray-100:#f8f9fa;--bs-gray-200:#e9ecef;--bs-gray-300:#dee2e6;--bs-gray-400:#ced4da;--bs-gray-500:#adb5bd;--bs-gray-600:#6c757d;--bs-gray-700:#495057;--bs-gray-800:#343a40;--bs-gray-900:#212529;--bs-primary:#0d6efd;--bs-secondary:#6c757d;--bs-success:#198754;--bs-info:#0dcaf0;--bs-warning:#ffc107;--bs-danger:#dc3545;--bs-light:#f8f9fa;--bs-dark:#212529;--bs-primary-rgb:13,110,253;--bs-secondary-rgb:108,117,125;--bs-success-rgb:25,135,84;--bs-info-rgb:13,202,240;--bs-warning-rgb:255,193,7;--bs-danger-rgb:220,53,69;--bs-light-rgb:248,249,250;--bs-dark-rgb:33,37,41;--bs-primary-text-emphasis:#052c65;--bs-secondary-text-emphasis:#2b2f32;--bs-success-text-emphasis:#0a3622;--bs-info-text-emphasis:#055160;--bs-warning-text-emphasis:#664d03;--bs-danger-text-emphasis:#58151c;--bs-light-text-emphasis:#495057;--bs-dark-text-emphasis:#495057;--bs-primary-bg-subtle:#cfe2ff;--bs-secondary-bg-subtle:#e2e3e5;--bs-success-bg-subtle:#d1e7dd;--bs-info-bg-subtle:#cff4fc;--bs-warning-bg-subtle:#fff3cd;--bs-danger-bg-subtle:#f8d7da;--bs-light-bg-subtle:#fcfcfd;--bs-dark-bg-subtle:#ced4da;--bs-primary-border-subtle:#9ec5fe;--bs-secondary-border-subtle:#c4c8cb;--bs-success-border-subtle:#a3cfbb;--bs-info-border-subtle:#9eeaf9;--bs-warning-border-subtle:#ffe69c;--bs-danger-border-subtle:#f1aeb5;--bs-light-border-subtle:#e9ecef;--bs-dark-border-subtle:#adb5bd;--bs-white-rgb:255,255,255;--bs-black-rgb:0,0,0;--bs-font-sans-serif:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--bs-gradient:linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-color-rgb:33,37,41;--bs-body-bg:#fff;--bs-body-bg-rgb:255,255,255;--bs-emphasis-color:#000;--bs-emphasis-color-rgb:0,0,0;--bs-secondary-color:rgba(33, 37, 41, 0.75);--bs-secondary-color-rgb:33,37,41;--bs-secondary-bg:#e9ecef;--bs-secondary-bg-rgb:233,236,239;--bs-tertiary-color:rgba(33, 37, 41, 0.5);--bs-tertiary-color-rgb:33,37,41;--bs-tertiary-bg:#f8f9fa;--bs-tertiary-bg-rgb:248,249,250;--bs-heading-color:inherit;--bs-link-color:#0d6efd;--bs-link-color-rgb:13,110,253;--bs-link-decoration:underline;--bs-link-hover-color:#0a58ca;--bs-link-hover-color-rgb:10,88,202;--bs-code-color:#d63384;--bs-highlight-color:#212529;--bs-highlight-bg:#fff3cd;--bs-border-width:1px;--bs-border-style:solid;--bs-border-color:#dee2e6;--bs-border-color-translucent:rgba(0, 0, 0, 0.175);--bs-border-radius:0.375rem;--bs-border-radius-sm:0.25rem;--bs-border-radius-lg:0.5rem;--bs-border-radius-xl:1rem;--bs-border-radius-xxl:2rem;--bs-border-radius-2xl:var(--bs-border-radius-xxl);--bs-border-radius-pill:50rem;--bs-box-shadow:0 0.5rem 1rem rgba(0, 0, 0, 0.15);--bs-box-shadow-sm:0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);--bs-box-shadow-lg:0 1rem 3rem rgba(0, 0, 0, 0.175);--bs-box-shadow-inset:inset 0 1px 2px rgba(0, 0, 0, 0.075);--bs-focus-ring-width:0.25rem;--bs-focus-ring-opacity:0.25;--bs-focus-ring-color:rgba(13, 110, 253, 0.25);--bs-form-valid-color:#198754;--bs-form-valid-border-color:#198754;--bs-form-invalid-color:#dc3545;--bs-form-invalid-border-color:#dc3545}[data-bs-theme=dark]{color-scheme:dark;--bs-body-color:#dee2e6;--bs-body-color-rgb:222,226,230;--bs-body-bg:#212529;--bs-body-bg-rgb:33,37,41;--bs-emphasis-color:#fff;--bs-emphasis-color-rgb:255,255,255;--bs-secondary-color:rgba(222, 226, 230, 0.75);--bs-secondary-color-rgb:222,226,230;--bs-secondary-bg:#343a40;--bs-secondary-bg-rgb:52,58,64;--bs-tertiary-color:rgba(222, 226, 230, 0.5);--bs-tertiary-color-rgb:222,226,230;--bs-tertiary-bg:#2b3035;--bs-tertiary-bg-rgb:43,48,53;--bs-primary-text-emphasis:#6ea8fe;--bs-secondary-text-emphasis:#a7acb1;--bs-success-text-emphasis:#75b798;--bs-info-text-emphasis:#6edff6;--bs-warning-text-emphasis:#ffda6a;--bs-danger-text-emphasis:#ea868f;--bs-light-text-emphasis:#f8f9fa;--bs-dark-text-emphasis:#dee2e6;--bs-primary-bg-subtle:#031633;--bs-secondary-bg-subtle:#161719;--bs-success-bg-subtle:#051b11;--bs-info-bg-subtle:#032830;--bs-warning-bg-subtle:#332701;--bs-danger-bg-subtle:#2c0b0e;--bs-light-bg-subtle:#343a40;--bs-dark-bg-subtle:#1a1d20;--bs-primary-border-subtle:#084298;--bs-secondary-border-subtle:#41464b;--bs-success-border-subtle:#0f5132;--bs-info-border-subtle:#087990;--bs-warning-border-subtle:#997404;--bs-danger-border-subtle:#842029;--bs-light-border-subtle:#495057;--bs-dark-border-subtle:#343a40;--bs-heading-color:inherit;--bs-link-color:#6ea8fe;--bs-link-hover-color:#8bb9fe;--bs-link-color-rgb:110,168,254;--bs-link-hover-color-rgb:139,185,254;--bs-code-color:#e685b5;--bs-highlight-color:#dee2e6;--bs-highlight-bg:#664d03;--bs-border-color:#495057;--bs-border-color-translucent:rgba(255, 255, 255, 0.15);--bs-form-valid-color:#75b798;--bs-form-valid-border-color:#75b798;--bs-form-invalid-color:#ea868f;--bs-form-invalid-border-color:#ea868f}*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}hr{margin:1rem 0;color:inherit;border:0;border-top:var(--bs-border-width) solid;opacity:.25}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2;color:var(--bs-heading-color)}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted;cursor:help;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none}address{margin-bottom:1rem;font-style:normal;line-height:inherit}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}blockquote{margin:0 0 1rem}b,strong{font-weight:bolder}small{font-size:.875em}mark{padding:.1875em;color:var(--bs-highlight-color);background-color:var(--bs-highlight-bg)}sub,sup{position:relative;font-size:.75em;line-height:0;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}a{color:rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));text-decoration:underline}a:hover{--bs-link-color-rgb:var(--bs-link-hover-color-rgb)}a:not([href]):not([class]),a:not([href]):not([class]):hover{color:inherit;text-decoration:none}code,kbd,pre,samp{font-family:var(--bs-font-monospace);font-size:1em}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:var(--bs-code-color);word-wrap:break-word}a>code{color:inherit}kbd{padding:.1875rem .375rem;font-size:.875em;color:var(--bs-body-bg);background-color:var(--bs-body-color);border-radius:.25rem}kbd kbd{padding:0;font-size:1em}figure{margin:0 0 1rem}img,svg{vertical-align:middle}table{caption-side:bottom;border-collapse:collapse}caption{padding-top:.5rem;padding-bottom:.5rem;color:var(--bs-secondary-color);text-align:left}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}label{display:inline-block}button{border-radius:0}button:focus:not(:focus-visible){outline:0}button,input,optgroup,select,textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button,select{text-transform:none}[role=button]{cursor:pointer}select{word-wrap:normal}select:disabled{opacity:1}[list]:not([type=date]):not([type=datetime-local]):not([type=month]):not([type=week]):not([type=time])::-webkit-calendar-picker-indicator{display:none!important}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}::-moz-focus-inner{padding:0;border-style:none}textarea{resize:vertical}fieldset{min-width:0;padding:0;margin:0;border:0}legend{float:left;width:100%;padding:0;margin-bottom:.5rem;line-height:inherit;font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){legend{font-size:1.5rem}}legend+*{clear:left}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}::file-selector-button{font:inherit;-webkit-appearance:button}output{display:inline-block}iframe{border:0}summary{display:list-item;cursor:pointer}progress{vertical-align:baseline}[hidden]{display:none!important}
+</style>
+<style>:root {
+	--t-color-primary:                        #7c3aed;
+
+	--t-color-primary-hover:                  color-mix(in oklch, var(--t-color-primary), black 10%);
+	--t-color-primary-active:                 color-mix(in oklch, var(--t-color-primary), black 20%);
+	--t-color-primary-foreground:             #ffffff;
+	--t-color-primary-foreground-hover:       #ffffff;
+	--t-color-primary-foreground-active:      #ffffff;
+
+	--t-color-accent:                         #f43f5e;
+
+	--t-color-accent-hover:                   color-mix(in oklch, var(--t-color-accent), black 10%);
+	--t-color-accent-active:                  color-mix(in oklch, var(--t-color-accent), black 20%);
+	--t-color-accent-foreground:              #ffffff;
+	--t-color-accent-foreground-hover:        #ffffff;
+	--t-color-accent-foreground-active:       #ffffff;
+
+	--t-color-destructive:                    #dc2626;
+
+	--t-color-destructive-hover:              color-mix(in oklch, var(--t-color-destructive), black 10%);
+	--t-color-destructive-active:             color-mix(in oklch, var(--t-color-destructive), black 20%);
+	--t-color-destructive-foreground:         #ffffff;
+	--t-color-destructive-foreground-hover:   #ffffff;
+	--t-color-destructive-foreground-active:  #ffffff;
+
+	--t-color-warning:                        #f59e0b;
+
+	--t-color-warning-hover:                  color-mix(in oklch, var(--t-color-warning), black 10%);
+	--t-color-warning-active:                 color-mix(in oklch, var(--t-color-warning), black 20%);
+	--t-color-warning-foreground:             #ffffff;
+	--t-color-warning-foreground-hover:       #ffffff;
+	--t-color-warning-foreground-active:      #ffffff;
+
+	--t-color-success:                        #059669;
+
+	--t-color-success-hover:                  color-mix(in oklch, var(--t-color-success), black 10%);
+	--t-color-success-active:                 color-mix(in oklch, var(--t-color-success), black 20%);
+	--t-color-success-foreground:             #ffffff;
+	--t-color-success-foreground-hover:       #ffffff;
+	--t-color-success-foreground-active:      #ffffff;
+
+	--t-color-surface-primary:                color-mix(in srgb, var(--t-color-primary) 15%, var(--t-color-background));
+	--t-color-surface-primary-foreground:     color-mix(in srgb, var(--t-color-primary), black 10%);
+	--t-color-surface-primary-border:         color-mix(in srgb, var(--t-color-primary) 30%, var(--t-color-background));
+	--t-color-surface-accent:                 color-mix(in srgb, var(--t-color-accent) 15%, var(--t-color-background));
+	--t-color-surface-accent-foreground:      color-mix(in srgb, var(--t-color-accent), black 10%);
+	--t-color-surface-accent-border:          color-mix(in srgb, var(--t-color-accent) 30%, var(--t-color-background));
+	--t-color-surface-destructive:            color-mix(in srgb, var(--t-color-destructive) 15%, var(--t-color-background));
+	--t-color-surface-destructive-foreground: color-mix(in srgb, var(--t-color-destructive), black 10%);
+	--t-color-surface-destructive-border:     color-mix(in srgb, var(--t-color-destructive) 30%, var(--t-color-background));
+	--t-color-surface-warning:                color-mix(in srgb, var(--t-color-warning) 15%, var(--t-color-background));
+	--t-color-surface-warning-foreground:     color-mix(in srgb, var(--t-color-warning), black 10%);
+	--t-color-surface-warning-border:         color-mix(in srgb, var(--t-color-warning) 30%, var(--t-color-background));
+	--t-color-surface-success:                color-mix(in srgb, var(--t-color-success) 15%, var(--t-color-background));
+	--t-color-surface-success-foreground:     color-mix(in srgb, var(--t-color-success), black 10%);
+	--t-color-surface-success-border:         color-mix(in srgb, var(--t-color-success) 30%, var(--t-color-background));
+	--t-color-surface-hover:                  color-mix(in oklch, var(--t-color-surface), black 10%);
+	--t-color-surface-active:                 color-mix(in oklch, var(--t-color-surface), black 20%);
+	--t-color-surface-foreground:             #18181b;
+	--t-color-surface-foreground-hover:       #18181b;
+	--t-color-surface-foreground-active:      #18181b;
+
+	--t-color-background:                     #fafafa;
+
+	--t-color-background-hover:               #fafafa;
+	--t-color-background-active:              #fafafa;
+	--t-color-background-foreground:          #18181b;
+	--t-color-background-foreground-hover:    #18181b;
+	--t-color-background-foreground-active:   #18181b;
+
+	--t-color-muted:                          #f4f4f5;
+
+	--t-color-muted-hover:                    color-mix(in oklch, var(--t-color-muted), black 10%);
+	--t-color-muted-active:                   color-mix(in oklch, var(--t-color-muted), black 20%);
+	--t-color-muted-foreground:               #71717a;
+	--t-color-muted-foreground-hover:         #71717a;
+	--t-color-muted-foreground-active:        #71717a;
+
+	--t-color-surface:                        #e4e4e7;
+
+	--t-color-surface-1:                      #d4d4d8;
+	--t-color-surface-1-hover:                color-mix(in oklch, var(--t-color-surface-1), black 10%);
+	--t-color-surface-1-active:               color-mix(in oklch, var(--t-color-surface-1), black 20%);
+	--t-color-surface-1-foreground:           #18181b;
+	--t-color-surface-1-foreground-hover:     #18181b;
+	--t-color-surface-1-foreground-active:    #18181b;
+
+	--t-color-foreground:                     #18181b;
+
+	--t-color-foreground-hover:               #18181b;
+	--t-color-foreground-active:              #18181b;
+
+	--t-color-border:                         #d4d4d8;
+
+	--t-color-border-hover:                   color-mix(in oklch, var(--t-color-border), black 10%);
+	--t-color-border-active:                  color-mix(in oklch, var(--t-color-border), black 20%);
+
+	--t-color-input:                          #ffffff;
+
+	--t-color-input-hover:                    #fafafa;
+	--t-color-input-active:                   color-mix(in oklch, var(--t-color-input), black 20%);
+
+	--t-color-ring:                           color-mix(in srgb, #8b5cf6 20%, transparent);
+
+	--t-color-ring-hover:                     color-mix(in srgb, #8b5cf6 20%, transparent);
+	--t-color-ring-active:                    color-mix(in srgb, #8b5cf6 20%, transparent);
+
+	--bs-body-bg:                             var(--t-color-background);
+
+	--bs-body-bg-rgb:                         250, 250, 250;
+
+	--bs-body-color:                          var(--t-color-background-foreground);
+
+	--bs-body-color-rgb:                      24, 24, 27;
+	--bs-link-color-rgb:                      124, 58, 237;
+
+	--bs-link-color:                          var(--t-color-primary);
+
+	--bs-link-hover-color:                    var(--t-color-primary-hover);
+
+	--bs-border-color:                        var(--t-color-border);
+
+	--bs-heading-color:                       var(--t-color-background-foreground);
+
+	--bs-code-color:                          var(--t-color-accent);
+
+	--bs-primary:                             var(--t-color-primary);
+
+	--bs-danger:                              var(--t-color-destructive);
+
+	--bs-warning:                             var(--t-color-warning);
+
+	--bs-success:                             var(--t-color-success);
+
+	--bs-secondary-color:                     var(--t-color-muted-foreground);
+
+	--bs-secondary-bg:                        var(--t-color-muted);
+
+	--bs-highlight-color:                     var(--t-color-background-foreground);
+
+	--bs-highlight-bg:                        var(--t-color-warning);
+}
+
+a { color: var(--bs-link-color); }
+a:hover { color: var(--bs-link-hover-color); }
+:root.dark {
+	--t-color-primary:                        #a78bfa;
+
+	--t-color-primary-hover:                  color-mix(in oklch, var(--t-color-primary), white 10%);
+	--t-color-primary-active:                 color-mix(in oklch, var(--t-color-primary), white 20%);
+	--t-color-primary-foreground:             #ffffff;
+	--t-color-primary-foreground-hover:       #ffffff;
+	--t-color-primary-foreground-active:      #ffffff;
+
+	--t-color-accent:                         #fb7185;
+
+	--t-color-accent-hover:                   color-mix(in oklch, var(--t-color-accent), white 10%);
+	--t-color-accent-active:                  color-mix(in oklch, var(--t-color-accent), white 20%);
+	--t-color-accent-foreground:              #ffffff;
+	--t-color-accent-foreground-hover:        #ffffff;
+	--t-color-accent-foreground-active:       #ffffff;
+
+	--t-color-destructive:                    #ef4444;
+
+	--t-color-destructive-hover:              color-mix(in oklch, var(--t-color-destructive), white 10%);
+	--t-color-destructive-active:             color-mix(in oklch, var(--t-color-destructive), white 20%);
+	--t-color-destructive-foreground:         #ffffff;
+	--t-color-destructive-foreground-hover:   #ffffff;
+	--t-color-destructive-foreground-active:  #ffffff;
+
+	--t-color-warning:                        #fbbf24;
+
+	--t-color-warning-hover:                  color-mix(in oklch, var(--t-color-warning), white 10%);
+	--t-color-warning-active:                 color-mix(in oklch, var(--t-color-warning), white 20%);
+	--t-color-warning-foreground:             #000000;
+	--t-color-warning-foreground-hover:       #000000;
+	--t-color-warning-foreground-active:      #000000;
+
+	--t-color-success:                        #10b981;
+
+	--t-color-success-hover:                  color-mix(in oklch, var(--t-color-success), white 10%);
+	--t-color-success-active:                 color-mix(in oklch, var(--t-color-success), white 20%);
+	--t-color-success-foreground:             #ffffff;
+	--t-color-success-foreground-hover:       #ffffff;
+	--t-color-success-foreground-active:      #ffffff;
+
+	--t-color-surface-primary:                color-mix(in srgb, var(--t-color-primary) 15%, var(--t-color-background));
+	--t-color-surface-primary-foreground:     color-mix(in srgb, var(--t-color-primary), white 10%);
+	--t-color-surface-primary-border:         color-mix(in srgb, var(--t-color-primary) 30%, var(--t-color-background));
+	--t-color-surface-accent:                 color-mix(in srgb, var(--t-color-accent) 15%, var(--t-color-background));
+	--t-color-surface-accent-foreground:      color-mix(in srgb, var(--t-color-accent), white 10%);
+	--t-color-surface-accent-border:          color-mix(in srgb, var(--t-color-accent) 30%, var(--t-color-background));
+	--t-color-surface-destructive:            color-mix(in srgb, var(--t-color-destructive) 15%, var(--t-color-background));
+	--t-color-surface-destructive-foreground: color-mix(in srgb, var(--t-color-destructive), white 10%);
+	--t-color-surface-destructive-border:     color-mix(in srgb, var(--t-color-destructive) 30%, var(--t-color-background));
+	--t-color-surface-warning:                color-mix(in srgb, var(--t-color-warning) 15%, var(--t-color-background));
+	--t-color-surface-warning-foreground:     color-mix(in srgb, var(--t-color-warning), white 10%);
+	--t-color-surface-warning-border:         color-mix(in srgb, var(--t-color-warning) 30%, var(--t-color-background));
+	--t-color-surface-success:                color-mix(in srgb, var(--t-color-success) 15%, var(--t-color-background));
+	--t-color-surface-success-foreground:     color-mix(in srgb, var(--t-color-success), white 10%);
+	--t-color-surface-success-border:         color-mix(in srgb, var(--t-color-success) 30%, var(--t-color-background));
+	--t-color-surface-hover:                  color-mix(in oklch, var(--t-color-surface), white 10%);
+	--t-color-surface-active:                 color-mix(in oklch, var(--t-color-surface), white 20%);
+	--t-color-surface-foreground:             #a1a1aa;
+	--t-color-surface-foreground-hover:       #a1a1aa;
+	--t-color-surface-foreground-active:      #a1a1aa;
+
+	--t-color-background:                     #09090b;
+
+	--t-color-background-hover:               #09090b;
+	--t-color-background-active:              #09090b;
+	--t-color-background-foreground:          #fafafa;
+	--t-color-background-foreground-hover:    #fafafa;
+	--t-color-background-foreground-active:   #fafafa;
+
+	--t-color-muted:                          #18181b;
+
+	--t-color-muted-hover:                    color-mix(in oklch, var(--t-color-muted), white 10%);
+	--t-color-muted-active:                   color-mix(in oklch, var(--t-color-muted), white 20%);
+	--t-color-muted-foreground:               #71717a;
+	--t-color-muted-foreground-hover:         #71717a;
+	--t-color-muted-foreground-active:        #71717a;
+
+	--t-color-surface:                        #27272a;
+
+	--t-color-surface-1:                      #3f3f46;
+	--t-color-surface-1-hover:                color-mix(in oklch, var(--t-color-surface-1), white 10%);
+	--t-color-surface-1-active:               color-mix(in oklch, var(--t-color-surface-1), white 20%);
+	--t-color-surface-1-foreground:           #d4d4d8;
+	--t-color-surface-1-foreground-hover:     #d4d4d8;
+	--t-color-surface-1-foreground-active:    #d4d4d8;
+
+	--t-color-foreground:                     #fafafa;
+
+	--t-color-foreground-hover:               #fafafa;
+	--t-color-foreground-active:              #fafafa;
+
+	--t-color-border:                         #3f3f46;
+
+	--t-color-border-hover:                   color-mix(in oklch, var(--t-color-border), white 10%);
+	--t-color-border-active:                  color-mix(in oklch, var(--t-color-border), white 20%);
+
+	--t-color-input:                          #09090b;
+
+	--t-color-input-hover:                    #18181b;
+	--t-color-input-active:                   color-mix(in oklch, var(--t-color-input), white 20%);
+
+	--t-color-ring:                           color-mix(in srgb, #a78bfa 25%, transparent);
+
+	--t-color-ring-hover:                     color-mix(in srgb, #a78bfa 25%, transparent);
+	--t-color-ring-active:                    color-mix(in srgb, #a78bfa 25%, transparent);
+
+	--bs-body-bg:                             var(--t-color-background);
+
+	--bs-body-bg-rgb:                         9, 9, 11;
+
+	--bs-body-color:                          var(--t-color-background-foreground);
+
+	--bs-body-color-rgb:                      250, 250, 250;
+	--bs-link-color-rgb:                      167, 139, 250;
+
+	--bs-link-color:                          var(--t-color-primary);
+
+	--bs-link-hover-color:                    var(--t-color-primary-hover);
+
+	--bs-border-color:                        var(--t-color-border);
+
+	--bs-heading-color:                       var(--t-color-background-foreground);
+
+	--bs-code-color:                          var(--t-color-accent);
+
+	--bs-primary:                             var(--t-color-primary);
+
+	--bs-danger:                              var(--t-color-destructive);
+
+	--bs-warning:                             var(--t-color-warning);
+
+	--bs-success:                             var(--t-color-success);
+
+	--bs-secondary-color:                     var(--t-color-muted-foreground);
+
+	--bs-secondary-bg:                        var(--t-color-muted);
+
+	--bs-highlight-color:                     var(--t-color-background-foreground);
+
+	--bs-highlight-bg:                        var(--t-color-warning);
+}
+
+:root.dark a { color: var(--bs-link-color); }
+:root.dark a:hover { color: var(--bs-link-hover-color); }</style>
+<style>
+* { box-sizing: border-box; }
+:root {
+	--b-primary: var(--t-color-primary, #7c3aed);
+	--b-accent: var(--t-color-accent, #f43f5e);
+	--b-bg: var(--t-color-background, #fff);
+	--b-fg: var(--t-color-foreground, #1e293b);
+	--b-muted: var(--t-color-muted, #f8fafc);
+	--b-muted-fg: var(--t-color-muted-foreground, #64748b);
+	--b-border: var(--t-color-border, #e2e8f0);
+	--b-surface: var(--t-color-surface, #f1f5f9);
+}
+body {
+	margin: 0;
+	font-family: 'Georgia', serif;
+	color: var(--b-fg);
+	background: var(--b-bg);
+	line-height: 1.8;
+}
+.b-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 2rem;
+	border-bottom: 1px solid var(--b-border);
+	font-family: system-ui, sans-serif;
+}
+.b-header a { text-decoration: none; color: inherit; font-weight: 600; }
+.b-header-right { display: flex; gap: 1rem; align-items: center; }
+.b-wrap { max-width: 52rem; margin: 0 auto; padding: 0 2rem; }
+.b-breadcrumbs {
+	padding: 1rem 0;
+	font-family: system-ui, sans-serif;
+	font-size: 0.8rem;
+	color: var(--b-muted-fg);
+}
+.b-breadcrumbs a { text-decoration: none; color: var(--b-muted-fg); }
+.b-breadcrumbs a:hover { color: var(--b-primary); }
+.b-article { padding: 1rem 0 3rem; }
+.b-article h1 { font-size: 2rem; font-weight: 400; margin: 0 0 0.5rem; line-height: 1.3; }
+.b-meta {
+	font-family: system-ui, sans-serif;
+	font-size: 0.85rem;
+	color: var(--b-muted-fg);
+	margin-bottom: 2rem;
+	display: flex;
+	gap: 1rem;
+}
+.b-post-list { list-style: none; padding: 0; }
+.b-post-list li {
+	padding: 1.25rem 0;
+	border-bottom: 1px solid var(--b-border);
+}
+.b-post-list a {
+	text-decoration: none;
+	color: inherit;
+	font-size: 1.2rem;
+}
+.b-post-list a:hover { color: var(--b-primary); }
+.b-post-list .b-post-date {
+	display: block;
+	font-family: system-ui, sans-serif;
+	font-size: 0.8rem;
+	color: var(--b-muted-fg);
+	margin-top: 0.25rem;
+}
+.b-related {
+	padding: 2rem 0;
+	border-top: 1px solid var(--b-border);
+	font-family: system-ui, sans-serif;
+}
+.b-related h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--b-muted-fg); margin: 0 0 1rem; }
+.b-related ul { list-style: none; padding: 0; }
+.b-related li { padding: 0.375rem 0; }
+.b-related a { text-decoration: none; color: var(--b-primary); }
+.b-footer {
+	padding: 2rem 0;
+	text-align: center;
+	color: var(--b-muted-fg);
+	font-size: 0.8rem;
+	font-family: system-ui, sans-serif;
+	border-top: 1px solid var(--b-border);
+}
+.b-theme-btn {
+	background: var(--b-muted);
+	border: 1px solid var(--b-border);
+	border-radius: 0.375rem;
+	padding: 0.25rem 0.75rem;
+	cursor: pointer;
+	font-size: 0.75rem;
+	color: var(--b-fg);
+}
+.b-theme-btn:hover { background: var(--b-primary); color: var(--t-color-primary-foreground, #fff); }
+</style>
+<script>
+// theme-switch v=10e5c85f
+(function(){var K="emde-theme",r=document.documentElement;function g(){return r.classList.contains("dark")?"dark":"light"}function s(m){m==="dark"?r.classList.add("dark"):r.classList.remove("dark");try{sessionStorage.setItem(K,m)}catch(e){}document.dispatchEvent(new CustomEvent("emde-theme-change",{detail:{mode:m}}))}try{if(sessionStorage.getItem(K)==="dark")r.classList.add("dark")}catch(e){}globalThis.__emdeTheme={toggle:function(){s(g()==="dark"?"light":"dark")},set:s,get:g}})();
+</script>
+</head>
+<body>
+	<header class="b-header">
+		<a href="../../">Emde Layout Demos</a>
+		<div class="b-header-right">
+			<button class="b-theme-btn" onclick="__emdeTheme.toggle()">Toggle theme</button>
+		</div>
+	</header>
+	<div class="b-wrap">
+		
+			<nav class="b-breadcrumbs">
+				
+					
+					<a href="../../">Emde Layout Demos</a>
+				
+					 &rsaquo; 
+					<a href="../">The Craft Journal</a>
+				
+					 &rsaquo; 
+					On Building Static Sites
+				
+			</nav>
+		
+		<main class="b-article">
+			
+				<div class="b-meta">
+					<span>2025-03-15</span>
+					<span>by Alex Morgan</span>
+				</div>
+			
+			<article><h1>On Building Static Sites</h1>
+<p>There&#39;s something deeply satisfying about a tool that takes markdown files and
+produces HTML. No runtime, no database, no build pipeline that takes longer
+than your coffee break.</p>
+<p>Static sites are having a moment — again. And this time, the tooling is
+actually good enough that you don&#39;t have to sacrifice developer experience
+for simplicity.</p>
+<h2>The case for constraints</h2>
+<p>When your entire site is a directory of markdown files, you&#39;re forced to think
+about structure. Every page has a place. Every piece of metadata lives in
+frontmatter or a shared <code>meta.yaml</code>. There&#39;s no &quot;quick hack&quot; — just clean,
+intentional content.</p>
+<h2>What&#39;s next</h2>
+<p>I&#39;m exploring how design tokens can be integrated directly into the build
+pipeline, so theme changes propagate from a single YAML file to every page.</p>
+<hr>
+<div id="like-widget" style="padding: 1rem; margin-top: 1rem; border: 1px solid var(--b-border, #e2e8f0); border-radius: 0.5rem; font-family: system-ui, sans-serif; text-align: center;">
+	<p style="margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--b-muted-fg, #64748b);">Did you enjoy this post?</p>
+	<button id="like-btn" style="padding: 0.5rem 1.5rem; font-size: 1rem; border: 1px solid var(--b-border, #e2e8f0); border-radius: 0.375rem; background: var(--b-muted, #f8fafc); cursor: pointer; transition: transform 0.1s;">
+		&#10084; <span id="like-count">0</span>
+	</button>
+</div><script>
+(function () {
+	var KEY = "emde-demo-likes";
+	var countEl = document.getElementById("like-count");
+	var btn = document.getElementById("like-btn");
+	var count = 0;
+
+	try { count = parseInt(sessionStorage.getItem(KEY)) || 0; } catch (e) {}
+	countEl.textContent = count;
+
+	btn.addEventListener("click", function () {
+		count++;
+		countEl.textContent = count;
+		btn.style.transform = "scale(1.15)";
+		setTimeout(function () { btn.style.transform = "scale(1)"; }, 150);
+		try { sessionStorage.setItem(KEY, count); } catch (e) {}
+	});
+})();
+</script></article>
+			
+		</main>
+		
+		<footer class="b-footer">&copy; 2026 Emde Layout Demos</footer>
+	</div>
+</body>
+</html>

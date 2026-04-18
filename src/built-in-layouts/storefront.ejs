@@ -1,0 +1,200 @@
+<%
+const { page, root, parent, _pages, _helpers } = props;
+const { relative, children, breadcrumbs, htmlHead, versionHash } = _helpers;
+
+const childs = children?.(props) ?? [];
+const crumbs = breadcrumbs?.(props) ?? [];
+const siteTitle = root?.meta?.title || 'Store';
+const isProduct = page.depth > 0 && childs.length === 0;
+%>
+<!DOCTYPE html>
+<html lang="<%= page.meta?.lang || 'en' %>">
+<head>
+<%= htmlHead(props, {
+	reboot: true,
+	seo: page.meta?.site || undefined,
+}) %>
+<style><%= _helpers.themeTokens?.(props) || '' %></style>
+<style>
+* { box-sizing: border-box; }
+:root {
+	--s-primary: var(--t-color-primary, #059669);
+	--s-primary-fg: var(--t-color-primary-foreground, #fff);
+	--s-accent: var(--t-color-accent, #d97706);
+	--s-bg: var(--t-color-background, #fff);
+	--s-fg: var(--t-color-foreground, #1e293b);
+	--s-muted: var(--t-color-muted, #f8fafc);
+	--s-muted-fg: var(--t-color-muted-foreground, #64748b);
+	--s-border: var(--t-color-border, #e2e8f0);
+	--s-surface: var(--t-color-surface, #f1f5f9);
+}
+body {
+	margin: 0;
+	font-family: system-ui, -apple-system, sans-serif;
+	color: var(--s-fg);
+	background: var(--s-bg);
+	line-height: 1.6;
+}
+.s-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.75rem 2rem;
+	background: var(--s-fg);
+	color: var(--s-bg);
+}
+.s-header a { text-decoration: none; color: inherit; font-weight: 700; font-size: 1.125rem; }
+.s-header-right { display: flex; gap: 1rem; align-items: center; }
+.s-category-bar {
+	display: flex;
+	gap: 1rem;
+	padding: 0.75rem 2rem;
+	border-bottom: 1px solid var(--s-border);
+	font-size: 0.85rem;
+	overflow-x: auto;
+}
+.s-category-bar a { text-decoration: none; color: var(--s-muted-fg); white-space: nowrap; }
+.s-category-bar a:hover { color: var(--s-primary); }
+.s-wrap { max-width: 80rem; margin: 0 auto; padding: 2rem; }
+.s-breadcrumbs {
+	font-size: 0.8rem;
+	color: var(--s-muted-fg);
+	margin-bottom: 1.5rem;
+}
+.s-breadcrumbs a { text-decoration: none; color: var(--s-muted-fg); }
+.s-breadcrumbs a:hover { color: var(--s-primary); }
+.s-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 1.5rem;
+}
+.s-card {
+	border: 1px solid var(--s-border);
+	border-radius: 0.75rem;
+	overflow: hidden;
+	transition: box-shadow 0.15s, transform 0.15s;
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+.s-card:hover {
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+	transform: translateY(-2px);
+}
+.s-card-img {
+	width: 100%;
+	aspect-ratio: 4/3;
+	display: block;
+}
+.s-card-body { padding: 1rem; }
+.s-card-body h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.s-card-body p { margin: 0; font-size: 0.85rem; color: var(--s-muted-fg); }
+.s-card-price { font-weight: 700; color: var(--s-primary); margin-top: 0.5rem; font-size: 1.1rem; }
+.s-product { max-width: 52rem; }
+.s-product-hero { display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.s-product-img { flex: 1; min-width: 250px; }
+.s-product-info { flex: 1; min-width: 250px; }
+.s-product-info h1 { margin: 0 0 0.5rem; font-size: 1.75rem; }
+.s-add-btn {
+	display: inline-block;
+	padding: 0.75rem 2rem;
+	background: var(--s-primary);
+	color: var(--s-primary-fg);
+	border: none;
+	border-radius: 0.5rem;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	margin-top: 1rem;
+}
+.s-footer {
+	padding: 2rem;
+	text-align: center;
+	color: var(--s-muted-fg);
+	font-size: 0.8rem;
+	border-top: 1px solid var(--s-border);
+	margin-top: 3rem;
+}
+.s-theme-btn {
+	background: rgba(255,255,255,0.15);
+	border: 1px solid rgba(255,255,255,0.3);
+	border-radius: 0.375rem;
+	padding: 0.25rem 0.75rem;
+	cursor: pointer;
+	font-size: 0.75rem;
+	color: var(--s-bg);
+}
+.s-theme-btn:hover { background: rgba(255,255,255,0.4); }
+</style>
+<script>
+<%= `// theme-switch v=${versionHash()}` %>
+(function(){var K="emde-theme",r=document.documentElement;function g(){return r.classList.contains("dark")?"dark":"light"}function s(m){m==="dark"?r.classList.add("dark"):r.classList.remove("dark");try{sessionStorage.setItem(K,m)}catch(e){}document.dispatchEvent(new CustomEvent("emde-theme-change",{detail:{mode:m}}))}try{if(sessionStorage.getItem(K)==="dark")r.classList.add("dark")}catch(e){}globalThis.__emdeTheme={toggle:function(){s(g()==="dark"?"light":"dark")},set:s,get:g}})();
+</script>
+</head>
+<body>
+	<header class="s-header">
+		<a href="<%= relative(page.path, '/') %>/"><%= siteTitle %></a>
+		<div class="s-header-right">
+			<button class="s-theme-btn" onclick="__emdeTheme.toggle()">Theme</button>
+		</div>
+	</header>
+	<% const rootChildren = root ? (_helpers.children?.({ ...props, page: root }) ?? []) : []; %>
+	<% if (rootChildren.length) { %>
+		<nav class="s-category-bar">
+			<% for (const p of rootChildren) { %>
+				<a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a>
+			<% } %>
+		</nav>
+	<% } %>
+	<div class="s-wrap">
+		<% if (crumbs.length > 1) { %>
+			<nav class="s-breadcrumbs">
+				<% for (const [i, p] of crumbs.entries()) { %>
+					<% if (i) { %> &rsaquo; <% } %>
+					<% if (i === crumbs.length - 1) { %><%= p.meta?.title || p.path %><% } else { %><a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a><% } %>
+				<% } %>
+			</nav>
+		<% } %>
+		<% if (isProduct) { %>
+			<div class="s-product">
+				<div class="s-product-hero">
+					<div class="s-product-img">
+						<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:0.5rem">
+							<rect width="400" height="300" fill="var(--s-muted)"/>
+							<rect x="100" y="60" width="200" height="180" rx="12" fill="var(--s-primary)" opacity="0.15"/>
+							<rect x="140" y="100" width="120" height="100" rx="8" fill="var(--s-primary)" opacity="0.25"/>
+							<text x="200" y="158" text-anchor="middle" fill="var(--s-muted-fg)" font-size="13" font-family="system-ui">Product image</text>
+						</svg>
+					</div>
+					<div class="s-product-info">
+						<article><%= page.html %></article>
+						<% if (page.meta?.price) { %><div class="s-card-price"><%= page.meta.price %></div><% } %>
+						<button class="s-add-btn">Add to cart</button>
+					</div>
+				</div>
+			</div>
+		<% } else { %>
+			<article><%= page.html %></article>
+			<% if (childs.length) { %>
+				<div class="s-grid">
+					<% for (const [ci, p] of childs.entries()) { %>
+						<a class="s-card" href="<%= relative(page.path, p.path) %>/">
+							<svg class="s-card-img" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+								<rect width="400" height="300" fill="var(--s-muted)"/>
+								<rect x="<%= 80 + (ci * 30) % 100 %>" y="50" width="<%= 160 + (ci * 20) % 80 %>" height="200" rx="12" fill="var(--s-primary)" opacity="<%= 0.1 + (ci * 0.05) %>"/>
+								<text x="200" y="158" text-anchor="middle" fill="var(--s-muted-fg)" font-size="13" font-family="system-ui"><%= p.meta?.title || p.path %></text>
+							</svg>
+							<div class="s-card-body">
+								<h3><%= p.meta?.title || p.path %></h3>
+								<% if (p.meta?.description) { %><p><%= p.meta.description %></p><% } %>
+								<% if (p.meta?.price) { %><div class="s-card-price"><%= p.meta.price %></div><% } %>
+							</div>
+						</a>
+					<% } %>
+				</div>
+			<% } %>
+		<% } %>
+	</div>
+	<footer class="s-footer">&copy; <%= new Date().getFullYear() %> <%= siteTitle %></footer>
+</body>
+</html>

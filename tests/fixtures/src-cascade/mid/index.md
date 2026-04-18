@@ -1,0 +1,5 @@
+---
+title: Mid
+---
+
+mid content

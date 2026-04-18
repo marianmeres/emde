@@ -1,4 +1,5 @@
 import type { Props } from "../emde.ts";
+import { esc as _esc } from "./_esc.ts";
 
 /**
  * Configuration options for SEO meta tag generation.
@@ -19,14 +20,6 @@ export interface SeoConfig {
 	titleSuffix?: string;
 	/** Separator between page title and suffix @default " | " */
 	titleSuffixSeparator?: string;
-}
-
-function _esc(value: string): string {
-	return value
-		.replace(/&/g, "&amp;")
-		.replace(/"/g, "&quot;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;");
 }
 
 function _tag(tag: string, attrs: Record<string, string | undefined>): string {

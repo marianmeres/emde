@@ -1,0 +1,138 @@
+<%
+const { page, root, parent, _pages, _helpers } = props;
+const {
+	relative, children, breadcrumbs, sitemap, seoMeta,
+	reboot, tokens, tokensWithReboot, versionHash, htmlHead
+} = _helpers;
+
+const crumbs = breadcrumbs?.(props) ?? [];
+const childs = children?.(props) ?? [];
+const siteTitle = root?.meta?.title || 'Documentation';
+const pageTitle = page.meta?.title || page.path;
+
+const tokensCfg = page.meta?.tokens;
+const siteCfg = page.meta?.site;
+%>
+<!DOCTYPE html>
+<html lang="<%= page.meta?.lang || 'en' %>">
+<head>
+<%= htmlHead(props, {
+	reboot: true,
+	tokens: tokensCfg || undefined,
+	seo: siteCfg || undefined,
+}) %>
+<style>
+* { box-sizing: border-box; }
+body {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+.emde-header {
+	padding: 0.75rem 1rem;
+	border-bottom: 1px solid #e2e8f0;
+	background: #f8fafc;
+}
+.emde-header a {
+	text-decoration: none;
+	color: inherit;
+	font-weight: 600;
+	font-size: 1.125rem;
+}
+.emde-container {
+	display: flex;
+	flex: 1;
+	max-width: 80rem;
+	margin: 0 auto;
+	width: 100%;
+}
+.emde-sidebar {
+	width: 16rem;
+	flex-shrink: 0;
+	padding: 1rem;
+	border-right: 1px solid #e2e8f0;
+	overflow-y: auto;
+}
+.emde-sidebar nav ul {
+	list-style: none;
+	padding-left: 1rem;
+	margin: 0.25rem 0;
+}
+.emde-sidebar nav > ul { padding-left: 0; }
+.emde-sidebar nav a { text-decoration: none; }
+.emde-sidebar nav a:hover { text-decoration: underline; }
+.emde-content {
+	flex: 1;
+	padding: 1.5rem 2rem;
+	max-width: 65ch;
+	min-width: 0;
+}
+.emde-breadcrumbs {
+	display: flex;
+	gap: 0.25rem;
+	list-style: none;
+	padding: 0;
+	margin: 0 0 1rem 0;
+	font-size: 0.875rem;
+	color: #64748b;
+}
+.emde-breadcrumbs a { text-decoration: none; }
+.emde-breadcrumbs a:hover { text-decoration: underline; }
+.emde-children {
+	margin-top: 2rem;
+	padding-top: 1rem;
+	border-top: 1px solid #e2e8f0;
+}
+.emde-children ul { padding-left: 1.25rem; }
+@media (max-width: 48rem) {
+	.emde-container { flex-direction: column; }
+	.emde-sidebar {
+		width: 100%;
+		border-right: none;
+		border-bottom: 1px solid #e2e8f0;
+	}
+	.emde-content { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+	<header class="emde-header">
+		<a href="<%= relative(page.path, '/') %>/"><%= siteTitle %></a>
+	</header>
+	<div class="emde-container">
+		<aside class="emde-sidebar">
+			<nav><%= sitemap(props) %></nav>
+		</aside>
+		<main class="emde-content">
+			<% if (crumbs.length > 1) { %>
+				<nav>
+					<ul class="emde-breadcrumbs">
+						<% for (const [i, p] of crumbs.entries()) { %>
+							<li>
+								<% if (i) { %><span>&rsaquo;</span> <% } %>
+								<% if (i === crumbs.length - 1) { %>
+									<span><%= p.meta?.title || p.path %></span>
+								<% } else { %>
+									<a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a>
+								<% } %>
+							</li>
+						<% } %>
+					</ul>
+				</nav>
+			<% } %>
+			<article><%= page.html %></article>
+			<% if (childs.length) { %>
+				<div class="emde-children">
+					<strong>In this section</strong>
+					<ul>
+						<% for (const p of childs) { %>
+							<li><a href="<%= relative(page.path, p.path) %>/"><%= p.meta?.title || p.path %></a></li>
+						<% } %>
+					</ul>
+				</div>
+			<% } %>
+		</main>
+	</div>
+</body>
+</html>

@@ -11,11 +11,18 @@ export interface JsonLdConfig {
 	siteUrl?: string;
 }
 
+// JSON-in-<script> safe escape: replace dangerous characters with JSON-compatible
+// unicode escapes that JSON.parse will correctly decode. Escaping `<` to `&lt;` (HTML
+// entity escape) would corrupt content because JSON.parse does not unescape entities.
+// Also escapes U+2028 / U+2029 — valid in JSON but illegal as raw chars in a JS script.
+// See https://medium.com/node-security/the-most-common-xss-vulnerability-in-react-js-applications-2bdffbcc1fa0
 function _esc(value: string): string {
 	return value
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;");
+		.replace(/</g, "\\u003c")
+		.replace(/>/g, "\\u003e")
+		.replace(/&/g, "\\u0026")
+		.replace(/\u2028/g, "\\u2028")
+		.replace(/\u2029/g, "\\u2029");
 }
 
 /**
