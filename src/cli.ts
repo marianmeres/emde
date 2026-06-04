@@ -64,7 +64,7 @@ ${dim("Example:")}
 		yellow(`\nWatching for changes: ${watchPaths.join(", ")}`),
 	);
 
-	let debounceTimer: number | undefined;
+	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let building = false;
 	let pending = false;
 
