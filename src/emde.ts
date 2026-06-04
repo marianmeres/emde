@@ -20,9 +20,9 @@ import { seoMeta } from "./template-helpers/seo.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
 import { versionHash } from "./template-helpers/version-hash.ts";
 import { tokens, tokensWithReboot } from "./template-helpers/tokens.ts";
+import { vanilla } from "./template-helpers/vanilla.ts";
 import { htmlHead } from "./template-helpers/html-head.ts";
 import { htmlShell } from "./template-helpers/html-shell.ts";
-import { BUILT_IN_LAYOUTS_DIR } from "./built-in-layouts/mod.ts";
 
 /**
  * Configuration options for the emde static site generator.
@@ -43,8 +43,10 @@ export interface EmdeOptions {
 	 * Directories containing `.ejs` layout files, resolved by name from `meta.layout`.
 	 *
 	 * When a page specifies `layout: docs` in its metadata, emde will look for
-	 * `docs.ejs` in these directories (left-to-right priority), then in the
-	 * built-in layouts directory.
+	 * `docs.ejs` in these directories (left-to-right priority). emde ships no
+	 * bundled layouts — if `meta.layout` is set but no matching file is found in
+	 * any of these directories, the build throws. (Copy-paste starter layouts
+	 * live in the repo's `example-layouts/layouts/` directory.)
 	 *
 	 * @example
 	 * ```ts
@@ -142,6 +144,8 @@ export interface Helpers extends Record<string, any> {
 	jsonLd: typeof jsonLd;
 	/** Returns a minimal CSS reset string */
 	reboot: typeof reboot;
+	/** Returns the @marianmeres/vanilla library as an inlinable JS string */
+	vanilla: typeof vanilla;
 	/** Calculates relative path between two page paths */
 	relative: typeof relative;
 	/** Generates SEO meta tags (title, description, OG, Twitter Card) */
@@ -406,6 +410,7 @@ export async function emde(
 							hreflang,
 							jsonLd,
 							reboot,
+							vanilla,
 							relative,
 							seoMeta,
 							siblings,
@@ -516,24 +521,20 @@ function _getLayout(
 		path = _removeLastSegment(path);
 	}
 
-	// 2. If meta.layout is set, resolve by name from layout directories
+	// 2. If meta.layout is set, resolve by name from the provided layout directories.
+	//    emde ships no bundled layouts — an unresolved named layout is a hard error.
 	if (meta?.layout && typeof meta.layout === "string") {
 		const name = meta.layout;
 
-		// Search external layout dirs first (left-to-right priority)
+		// Search layout dirs left-to-right (first match wins)
 		for (const dir of layoutDirs ?? []) {
 			const layout = _readLayout(join(dir, `${name}.ejs`));
 			if (layout) return layout;
 		}
 
-		// Then built-in layouts dir
-		const builtIn = _readLayout(
-			join(BUILT_IN_LAYOUTS_DIR, `${name}.ejs`),
-		);
-		if (builtIn) return builtIn;
-
-		const searched = [...(layoutDirs ?? []), BUILT_IN_LAYOUTS_DIR]
-			.join(", ");
+		const searched = (layoutDirs ?? []).length
+			? (layoutDirs ?? []).join(", ")
+			: "(no layout directories configured — pass options.layouts)";
 		throw new Error(
 			`Layout "${meta.layout}" not found. Searched: ${searched}`,
 		);

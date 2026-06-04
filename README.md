@@ -13,8 +13,8 @@ Works out-of-the-box with no configuration, while still being fully extensible w
 - Directory-based page structure
 - YAML frontmatter and `meta.yaml` support with hierarchical merging
 - Customizable layouts using lodash/EJS templates, with cascade up the directory tree
-- Built-in layouts (`blog`, `docs`, `landing`, `minimal`, `news`, `personal`, `storefront`)
-- Built-in template helpers for navigation, breadcrumbs, sitemaps, SEO, hreflang, JSON-LD, design tokens, full `<head>` / document shells
+- Named layouts resolved by `meta.layout` from your `--layouts` / `options.layouts` directories (copy-paste starter layouts live in [`example-layouts/layouts/`](./example-layouts/layouts/))
+- Built-in template helpers for navigation, breadcrumbs, sitemaps, SEO, hreflang, JSON-LD, design tokens, full `<head>` / document shells, and inlining [`@marianmeres/vanilla`](https://jsr.io/@marianmeres/vanilla) for client-side reactivity
 - Watch mode (`--watch`) with debounced, serialized rebuilds
 - Hidden content support (directories starting with `_` or `.`)
 - Automatic `node_modules` exclusion
@@ -134,8 +134,8 @@ author: Blog Team  # Overrides the default
 Custom EJS template using [lodash template syntax](https://lodash.com/docs/4.17.15#template).
 Layouts cascade from the page's own directory upward to the source root; the closest
 ancestor `layout.ejs` is used. If none is found and `meta.layout: <name>` is set, emde
-looks for `<name>.ejs` in each `options.layouts` directory (left → right) and finally in
-the [built-in layouts](#built-in-layouts).
+looks for `<name>.ejs` in each `options.layouts` directory (left → right). emde ships no
+bundled layouts — see [named layouts](#named-layouts) below.
 
 ```ejs
 <% const { page, root, parent, _pages, _helpers } = props; %>
@@ -156,11 +156,16 @@ the [built-in layouts](#built-in-layouts).
 
 If no custom layout is found and `meta.layout` is unset, a basic default layout is used.
 
-#### Built-in layouts
+#### Named layouts
 
-Set `layout: <name>` in `meta.yaml` (or page frontmatter) to use one of the bundled
-templates: `blog`, `docs`, `landing`, `minimal`, `news`, `personal`, `storefront`. See
-[`example-layouts/src/`](./example-layouts/src/) for a working showcase of each.
+Set `layout: <name>` in `meta.yaml` (or page frontmatter) to resolve `<name>.ejs` by
+name from your `--layouts` / `options.layouts` directories. emde **does not bundle any
+layouts** — if `meta.layout` is set but no matching file is found, the build throws.
+
+Seven copy-paste starter layouts (`blog`, `docs`, `landing`, `minimal`, `news`,
+`personal`, `storefront`) live in [`example-layouts/layouts/`](./example-layouts/layouts/);
+[`example-layouts/src/`](./example-layouts/src/) is a working showcase (built with
+`--layouts ./example-layouts/layouts`). Copy the ones you want into your own project.
 
 ### `helpers.js` (Optional)
 
@@ -352,6 +357,44 @@ yourself. Use `tokensWithReboot()` when your layout includes `reboot()` — it
 automatically maps your theme colors to the variables that Reboot's CSS rules consume
 (body color/background, link colors with RGB triplets, borders, headings, code, semantic
 colors).
+
+## Client-side reactivity
+
+The `vanilla()` helper returns [`@marianmeres/vanilla`](https://jsr.io/@marianmeres/vanilla)
+— a tiny, zero-dependency reactive DOM library — as a single inlinable JS string,
+mirroring how `reboot()` inlines CSS. Drop it into the `<head>`; it binds the library to
+`globalThis.vanilla`:
+
+```ejs
+<head>
+  <script><%= _helpers.vanilla() %></script>
+</head>
+<body>
+  <div id="app"></div>
+  <template id="counter">
+    <output data-ref="value">0</output>
+    <button data-on="click:inc">+</button>
+  </template>
+  <script>
+    // runs after the DOM exists; `vanilla` is already defined
+    const { observable, reactTo, fromTemplate, refs, delegate } = globalThis.vanilla;
+    const node = fromTemplate("counter");
+    document.getElementById("app").appendChild(node);
+    const r = refs(node), count = observable(0);
+    reactTo([count], () => { r.value.textContent = count.get(); });
+    delegate(node, { inc: () => count.update((n) => n + 1) });
+  </script>
+</body>
+```
+
+Notes: include it **once per page**; your wiring code must run **after** the DOM exists
+(end of `<body>` or `DOMContentLoaded`); inlining requires a CSP that allows inline
+scripts (`script-src 'unsafe-inline'` or a nonce/hash). For many-page sites that want a
+shared browser cache, self-host the library as an external script instead and cache-bust
+the URL with `versionHash()`. See [`example/src/x/vanilla/`](./example/src/x/vanilla/) for
+a runnable demo.
+
+The vendored bundle is regenerated from JSR with `deno task vendor:vanilla`.
 
 ## API
 

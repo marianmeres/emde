@@ -22,68 +22,69 @@
 </style>
 <style>:root {
 	--t-color-primary:                        #4f46e5;
-
-	--t-color-primary-hover:                  color-mix(in oklch, var(--t-color-primary), black 10%);
-	--t-color-primary-active:                 color-mix(in oklch, var(--t-color-primary), black 20%);
+	--t-color-primary-hover:                  color-mix(in oklab, var(--t-color-primary), black 10%);
+	--t-color-primary-active:                 color-mix(in oklab, var(--t-color-primary), black 20%);
 	--t-color-primary-foreground:             #ffffff;
 	--t-color-primary-foreground-hover:       #ffffff;
 	--t-color-primary-foreground-active:      #ffffff;
 
 	--t-color-accent:                         #f59e0b;
-
-	--t-color-accent-hover:                   color-mix(in oklch, var(--t-color-accent), black 10%);
-	--t-color-accent-active:                  color-mix(in oklch, var(--t-color-accent), black 20%);
+	--t-color-accent-hover:                   color-mix(in oklab, var(--t-color-accent), black 10%);
+	--t-color-accent-active:                  color-mix(in oklab, var(--t-color-accent), black 20%);
 	--t-color-accent-foreground:              #ffffff;
 	--t-color-accent-foreground-hover:        #ffffff;
 	--t-color-accent-foreground-active:       #ffffff;
 
 	--t-color-destructive:                    #e11d48;
-
-	--t-color-destructive-hover:              color-mix(in oklch, var(--t-color-destructive), black 10%);
-	--t-color-destructive-active:             color-mix(in oklch, var(--t-color-destructive), black 20%);
+	--t-color-destructive-hover:              color-mix(in oklab, var(--t-color-destructive), black 10%);
+	--t-color-destructive-active:             color-mix(in oklab, var(--t-color-destructive), black 20%);
 	--t-color-destructive-foreground:         #ffffff;
 	--t-color-destructive-foreground-hover:   #ffffff;
 	--t-color-destructive-foreground-active:  #ffffff;
 
 	--t-color-warning:                        #f59e0b;
-
-	--t-color-warning-hover:                  color-mix(in oklch, var(--t-color-warning), black 10%);
-	--t-color-warning-active:                 color-mix(in oklch, var(--t-color-warning), black 20%);
+	--t-color-warning-hover:                  color-mix(in oklab, var(--t-color-warning), black 10%);
+	--t-color-warning-active:                 color-mix(in oklab, var(--t-color-warning), black 20%);
 	--t-color-warning-foreground:             #ffffff;
 	--t-color-warning-foreground-hover:       #ffffff;
 	--t-color-warning-foreground-active:      #ffffff;
 
 	--t-color-success:                        #0d9488;
-
-	--t-color-success-hover:                  color-mix(in oklch, var(--t-color-success), black 10%);
-	--t-color-success-active:                 color-mix(in oklch, var(--t-color-success), black 20%);
+	--t-color-success-hover:                  color-mix(in oklab, var(--t-color-success), black 10%);
+	--t-color-success-active:                 color-mix(in oklab, var(--t-color-success), black 20%);
 	--t-color-success-foreground:             #ffffff;
 	--t-color-success-foreground-hover:       #ffffff;
 	--t-color-success-foreground-active:      #ffffff;
 
 	--t-color-surface-primary:                color-mix(in srgb, var(--t-color-primary) 15%, var(--t-color-background));
-	--t-color-surface-primary-foreground:     color-mix(in srgb, var(--t-color-primary), black 10%);
+	--t-color-surface-primary-foreground:     color-mix(in srgb, var(--t-color-primary), black 50%);
 	--t-color-surface-primary-border:         color-mix(in srgb, var(--t-color-primary) 30%, var(--t-color-background));
 	--t-color-surface-accent:                 color-mix(in srgb, var(--t-color-accent) 15%, var(--t-color-background));
-	--t-color-surface-accent-foreground:      color-mix(in srgb, var(--t-color-accent), black 10%);
+	--t-color-surface-accent-foreground:      color-mix(in srgb, var(--t-color-accent), black 50%);
 	--t-color-surface-accent-border:          color-mix(in srgb, var(--t-color-accent) 30%, var(--t-color-background));
 	--t-color-surface-destructive:            color-mix(in srgb, var(--t-color-destructive) 15%, var(--t-color-background));
-	--t-color-surface-destructive-foreground: color-mix(in srgb, var(--t-color-destructive), black 10%);
+	--t-color-surface-destructive-foreground: color-mix(in srgb, var(--t-color-destructive), black 50%);
 	--t-color-surface-destructive-border:     color-mix(in srgb, var(--t-color-destructive) 30%, var(--t-color-background));
 	--t-color-surface-warning:                color-mix(in srgb, var(--t-color-warning) 15%, var(--t-color-background));
-	--t-color-surface-warning-foreground:     color-mix(in srgb, var(--t-color-warning), black 10%);
+	--t-color-surface-warning-foreground:     color-mix(in srgb, var(--t-color-warning), black 50%);
 	--t-color-surface-warning-border:         color-mix(in srgb, var(--t-color-warning) 30%, var(--t-color-background));
 	--t-color-surface-success:                color-mix(in srgb, var(--t-color-success) 15%, var(--t-color-background));
-	--t-color-surface-success-foreground:     color-mix(in srgb, var(--t-color-success), black 10%);
+	--t-color-surface-success-foreground:     color-mix(in srgb, var(--t-color-success), black 50%);
 	--t-color-surface-success-border:         color-mix(in srgb, var(--t-color-success) 30%, var(--t-color-background));
-	--t-color-surface-hover:                  color-mix(in oklch, var(--t-color-surface), black 10%);
-	--t-color-surface-active:                 color-mix(in oklch, var(--t-color-surface), black 20%);
+	--t-color-surface:                        #e5e5e5;
+	--t-color-surface-hover:                  color-mix(in oklab, var(--t-color-surface), var(--t-color-foreground) 10%);
+	--t-color-surface-active:                 color-mix(in oklab, var(--t-color-surface), var(--t-color-foreground) 20%);
 	--t-color-surface-foreground:             #171717;
 	--t-color-surface-foreground-hover:       #171717;
 	--t-color-surface-foreground-active:      #171717;
+	--t-color-surface-1:                      #d4d4d4;
+	--t-color-surface-1-hover:                color-mix(in oklab, var(--t-color-surface-1), var(--t-color-foreground) 10%);
+	--t-color-surface-1-active:               color-mix(in oklab, var(--t-color-surface-1), var(--t-color-foreground) 20%);
+	--t-color-surface-1-foreground:           #171717;
+	--t-color-surface-1-foreground-hover:     #171717;
+	--t-color-surface-1-foreground-active:    #171717;
 
 	--t-color-background:                     #ffffff;
-
 	--t-color-background-hover:               #ffffff;
 	--t-color-background-active:              #ffffff;
 	--t-color-background-foreground:          #171717;
@@ -91,39 +92,25 @@
 	--t-color-background-foreground-active:   #171717;
 
 	--t-color-muted:                          #f5f5f5;
-
-	--t-color-muted-hover:                    color-mix(in oklch, var(--t-color-muted), black 10%);
-	--t-color-muted-active:                   color-mix(in oklch, var(--t-color-muted), black 20%);
+	--t-color-muted-hover:                    color-mix(in oklab, var(--t-color-muted), var(--t-color-foreground) 10%);
+	--t-color-muted-active:                   color-mix(in oklab, var(--t-color-muted), var(--t-color-foreground) 20%);
 	--t-color-muted-foreground:               #737373;
 	--t-color-muted-foreground-hover:         #737373;
 	--t-color-muted-foreground-active:        #737373;
 
-	--t-color-surface:                        #e5e5e5;
-
-	--t-color-surface-1:                      #d4d4d4;
-	--t-color-surface-1-hover:                color-mix(in oklch, var(--t-color-surface-1), black 10%);
-	--t-color-surface-1-active:               color-mix(in oklch, var(--t-color-surface-1), black 20%);
-	--t-color-surface-1-foreground:           #171717;
-	--t-color-surface-1-foreground-hover:     #171717;
-	--t-color-surface-1-foreground-active:    #171717;
-
 	--t-color-foreground:                     #171717;
-
 	--t-color-foreground-hover:               #171717;
 	--t-color-foreground-active:              #171717;
 
 	--t-color-border:                         #d4d4d4;
-
-	--t-color-border-hover:                   color-mix(in oklch, var(--t-color-border), black 10%);
-	--t-color-border-active:                  color-mix(in oklch, var(--t-color-border), black 20%);
+	--t-color-border-hover:                   color-mix(in oklab, var(--t-color-border), var(--t-color-foreground) 10%);
+	--t-color-border-active:                  color-mix(in oklab, var(--t-color-border), var(--t-color-foreground) 20%);
 
 	--t-color-input:                          #ffffff;
-
 	--t-color-input-hover:                    #fafafa;
-	--t-color-input-active:                   color-mix(in oklch, var(--t-color-input), black 20%);
+	--t-color-input-active:                   color-mix(in oklab, var(--t-color-input), var(--t-color-foreground) 20%);
 
 	--t-color-ring:                           color-mix(in srgb, #4f46e5 20%, transparent);
-
 	--t-color-ring-hover:                     color-mix(in srgb, #4f46e5 20%, transparent);
 	--t-color-ring-active:                    color-mix(in srgb, #4f46e5 20%, transparent);
 
@@ -167,68 +154,69 @@ a { color: var(--bs-link-color); }
 a:hover { color: var(--bs-link-hover-color); }
 :root.dark {
 	--t-color-primary:                        #6366f1;
-
-	--t-color-primary-hover:                  color-mix(in oklch, var(--t-color-primary), white 10%);
-	--t-color-primary-active:                 color-mix(in oklch, var(--t-color-primary), white 20%);
+	--t-color-primary-hover:                  color-mix(in oklab, var(--t-color-primary), white 10%);
+	--t-color-primary-active:                 color-mix(in oklab, var(--t-color-primary), white 20%);
 	--t-color-primary-foreground:             #ffffff;
 	--t-color-primary-foreground-hover:       #ffffff;
 	--t-color-primary-foreground-active:      #ffffff;
 
 	--t-color-accent:                         #fbbf24;
-
-	--t-color-accent-hover:                   color-mix(in oklch, var(--t-color-accent), white 10%);
-	--t-color-accent-active:                  color-mix(in oklch, var(--t-color-accent), white 20%);
+	--t-color-accent-hover:                   color-mix(in oklab, var(--t-color-accent), white 10%);
+	--t-color-accent-active:                  color-mix(in oklab, var(--t-color-accent), white 20%);
 	--t-color-accent-foreground:              #000000;
 	--t-color-accent-foreground-hover:        #000000;
 	--t-color-accent-foreground-active:       #000000;
 
 	--t-color-destructive:                    #f43f5e;
-
-	--t-color-destructive-hover:              color-mix(in oklch, var(--t-color-destructive), white 10%);
-	--t-color-destructive-active:             color-mix(in oklch, var(--t-color-destructive), white 20%);
+	--t-color-destructive-hover:              color-mix(in oklab, var(--t-color-destructive), white 10%);
+	--t-color-destructive-active:             color-mix(in oklab, var(--t-color-destructive), white 20%);
 	--t-color-destructive-foreground:         #ffffff;
 	--t-color-destructive-foreground-hover:   #ffffff;
 	--t-color-destructive-foreground-active:  #ffffff;
 
 	--t-color-warning:                        #fbbf24;
-
-	--t-color-warning-hover:                  color-mix(in oklch, var(--t-color-warning), white 10%);
-	--t-color-warning-active:                 color-mix(in oklch, var(--t-color-warning), white 20%);
+	--t-color-warning-hover:                  color-mix(in oklab, var(--t-color-warning), white 10%);
+	--t-color-warning-active:                 color-mix(in oklab, var(--t-color-warning), white 20%);
 	--t-color-warning-foreground:             #000000;
 	--t-color-warning-foreground-hover:       #000000;
 	--t-color-warning-foreground-active:      #000000;
 
 	--t-color-success:                        #14b8a6;
-
-	--t-color-success-hover:                  color-mix(in oklch, var(--t-color-success), white 10%);
-	--t-color-success-active:                 color-mix(in oklch, var(--t-color-success), white 20%);
+	--t-color-success-hover:                  color-mix(in oklab, var(--t-color-success), white 10%);
+	--t-color-success-active:                 color-mix(in oklab, var(--t-color-success), white 20%);
 	--t-color-success-foreground:             #ffffff;
 	--t-color-success-foreground-hover:       #ffffff;
 	--t-color-success-foreground-active:      #ffffff;
 
 	--t-color-surface-primary:                color-mix(in srgb, var(--t-color-primary) 15%, var(--t-color-background));
-	--t-color-surface-primary-foreground:     color-mix(in srgb, var(--t-color-primary), white 10%);
+	--t-color-surface-primary-foreground:     color-mix(in srgb, var(--t-color-primary), white 50%);
 	--t-color-surface-primary-border:         color-mix(in srgb, var(--t-color-primary) 30%, var(--t-color-background));
 	--t-color-surface-accent:                 color-mix(in srgb, var(--t-color-accent) 15%, var(--t-color-background));
-	--t-color-surface-accent-foreground:      color-mix(in srgb, var(--t-color-accent), white 10%);
+	--t-color-surface-accent-foreground:      color-mix(in srgb, var(--t-color-accent), white 50%);
 	--t-color-surface-accent-border:          color-mix(in srgb, var(--t-color-accent) 30%, var(--t-color-background));
 	--t-color-surface-destructive:            color-mix(in srgb, var(--t-color-destructive) 15%, var(--t-color-background));
-	--t-color-surface-destructive-foreground: color-mix(in srgb, var(--t-color-destructive), white 10%);
+	--t-color-surface-destructive-foreground: color-mix(in srgb, var(--t-color-destructive), white 50%);
 	--t-color-surface-destructive-border:     color-mix(in srgb, var(--t-color-destructive) 30%, var(--t-color-background));
 	--t-color-surface-warning:                color-mix(in srgb, var(--t-color-warning) 15%, var(--t-color-background));
-	--t-color-surface-warning-foreground:     color-mix(in srgb, var(--t-color-warning), white 10%);
+	--t-color-surface-warning-foreground:     color-mix(in srgb, var(--t-color-warning), white 50%);
 	--t-color-surface-warning-border:         color-mix(in srgb, var(--t-color-warning) 30%, var(--t-color-background));
 	--t-color-surface-success:                color-mix(in srgb, var(--t-color-success) 15%, var(--t-color-background));
-	--t-color-surface-success-foreground:     color-mix(in srgb, var(--t-color-success), white 10%);
+	--t-color-surface-success-foreground:     color-mix(in srgb, var(--t-color-success), white 50%);
 	--t-color-surface-success-border:         color-mix(in srgb, var(--t-color-success) 30%, var(--t-color-background));
-	--t-color-surface-hover:                  color-mix(in oklch, var(--t-color-surface), white 10%);
-	--t-color-surface-active:                 color-mix(in oklch, var(--t-color-surface), white 20%);
+	--t-color-surface:                        #404040;
+	--t-color-surface-hover:                  color-mix(in oklab, var(--t-color-surface), var(--t-color-foreground) 10%);
+	--t-color-surface-active:                 color-mix(in oklab, var(--t-color-surface), var(--t-color-foreground) 20%);
 	--t-color-surface-foreground:             #d4d4d4;
 	--t-color-surface-foreground-hover:       #d4d4d4;
 	--t-color-surface-foreground-active:      #d4d4d4;
+	--t-color-surface-1:                      #525252;
+	--t-color-surface-1-hover:                color-mix(in oklab, var(--t-color-surface-1), var(--t-color-foreground) 10%);
+	--t-color-surface-1-active:               color-mix(in oklab, var(--t-color-surface-1), var(--t-color-foreground) 20%);
+	--t-color-surface-1-foreground:           #e5e5e5;
+	--t-color-surface-1-foreground-hover:     #e5e5e5;
+	--t-color-surface-1-foreground-active:    #e5e5e5;
 
 	--t-color-background:                     #171717;
-
 	--t-color-background-hover:               #171717;
 	--t-color-background-active:              #171717;
 	--t-color-background-foreground:          #fafafa;
@@ -236,39 +224,25 @@ a:hover { color: var(--bs-link-hover-color); }
 	--t-color-background-foreground-active:   #fafafa;
 
 	--t-color-muted:                          #262626;
-
-	--t-color-muted-hover:                    color-mix(in oklch, var(--t-color-muted), white 10%);
-	--t-color-muted-active:                   color-mix(in oklch, var(--t-color-muted), white 20%);
+	--t-color-muted-hover:                    color-mix(in oklab, var(--t-color-muted), var(--t-color-foreground) 10%);
+	--t-color-muted-active:                   color-mix(in oklab, var(--t-color-muted), var(--t-color-foreground) 20%);
 	--t-color-muted-foreground:               #a3a3a3;
 	--t-color-muted-foreground-hover:         #a3a3a3;
 	--t-color-muted-foreground-active:        #a3a3a3;
 
-	--t-color-surface:                        #404040;
-
-	--t-color-surface-1:                      #525252;
-	--t-color-surface-1-hover:                color-mix(in oklch, var(--t-color-surface-1), white 10%);
-	--t-color-surface-1-active:               color-mix(in oklch, var(--t-color-surface-1), white 20%);
-	--t-color-surface-1-foreground:           #e5e5e5;
-	--t-color-surface-1-foreground-hover:     #e5e5e5;
-	--t-color-surface-1-foreground-active:    #e5e5e5;
-
 	--t-color-foreground:                     #fafafa;
-
 	--t-color-foreground-hover:               #fafafa;
 	--t-color-foreground-active:              #fafafa;
 
 	--t-color-border:                         #404040;
-
-	--t-color-border-hover:                   color-mix(in oklch, var(--t-color-border), white 10%);
-	--t-color-border-active:                  color-mix(in oklch, var(--t-color-border), white 20%);
+	--t-color-border-hover:                   color-mix(in oklab, var(--t-color-border), var(--t-color-foreground) 10%);
+	--t-color-border-active:                  color-mix(in oklab, var(--t-color-border), var(--t-color-foreground) 20%);
 
 	--t-color-input:                          #171717;
-
 	--t-color-input-hover:                    #262626;
-	--t-color-input-active:                   color-mix(in oklch, var(--t-color-input), white 20%);
+	--t-color-input-active:                   color-mix(in oklab, var(--t-color-input), var(--t-color-foreground) 20%);
 
 	--t-color-ring:                           color-mix(in srgb, #818cf8 25%, transparent);
-
 	--t-color-ring-hover:                     color-mix(in srgb, #818cf8 25%, transparent);
 	--t-color-ring-active:                    color-mix(in srgb, #818cf8 25%, transparent);
 
@@ -427,7 +401,7 @@ body {
 .l-theme-btn:hover { background: var(--landing-primary); color: var(--landing-primary-fg); }
 </style>
 <script>
-// theme-switch v=10e5c85f
+// theme-switch v=59891b8f
 (function(){var K="emde-theme",r=document.documentElement;function g(){return r.classList.contains("dark")?"dark":"light"}function s(m){m==="dark"?r.classList.add("dark"):r.classList.remove("dark");try{sessionStorage.setItem(K,m)}catch(e){}document.dispatchEvent(new CustomEvent("emde-theme-change",{detail:{mode:m}}))}try{if(sessionStorage.getItem(K)==="dark")r.classList.add("dark")}catch(e){}globalThis.__emdeTheme={toggle:function(){s(g()==="dark"?"light":"dark")},set:s,get:g}})();
 </script>
 </head>

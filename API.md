@@ -87,7 +87,7 @@ deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist [options]
 - `--force` — Overwrite a non-empty destination directory
 - `--verbose` — Log each processed page
 - `--watch` — Rebuild on file changes in `--indir` and any `--layouts` paths (debounced 300 ms; rebuilds are serialized)
-- `--layouts <path>` — Extra layout directory; repeat for multiple paths (priority left → right, then built-in)
+- `--layouts <path>` — Layout directory searched by name for `meta.layout`; repeat for multiple paths (priority left → right). emde ships no bundled layouts.
 - `--help`, `-h` — Show help
 
 **Example:**
@@ -104,8 +104,8 @@ deno run -A jsr:@marianmeres/emde/cli --indir src --outdir dist \
 
 1. `layout.ejs` in the page's own directory
 2. `layout.ejs` in any ancestor directory, walking up to the source root
-3. If `meta.layout: <name>` is set, look for `<name>.ejs` in each `options.layouts` directory (left → right), then in the built-in layouts directory
-4. Built-in fallback layout
+3. If `meta.layout: <name>` is set, look for `<name>.ejs` in each `options.layouts` directory (left → right). emde ships no bundled layouts, so an unresolved named layout throws.
+4. Otherwise (no `meta.layout`), a basic built-in fallback layout
 
 ### Metadata merging
 
@@ -123,12 +123,15 @@ A malformed `meta.yaml` (or frontmatter, with `strict: true`) is fatal — the b
 
 When `force: true` (or `--force`), the destination is emptied with `emptyDirSync` and the generated output copied in. The destination directory's inode is preserved (safe for symlinks, mount points, and file watchers). All pre-existing contents of `destDir` are removed; put assets you want preserved (e.g. `CNAME`) inside `srcDir` so they are copied through.
 
-### Built-in layouts
+### Named layouts
 
-Use `meta.layout: <name>` to opt into a built-in template:
-`blog`, `docs`, `landing`, `minimal`, `news`, `personal`, `storefront`.
+Use `meta.layout: <name>` to resolve `<name>.ejs` by name from your `options.layouts`
+(`--layouts`) directories. emde **bundles no layouts** — an unresolved named layout is a
+hard error.
 
-The `example-layouts/src/` directory in this repo demonstrates each one.
+Seven copy-paste starter layouts (`blog`, `docs`, `landing`, `minimal`, `news`,
+`personal`, `storefront`) live in `example-layouts/layouts/`; `example-layouts/src/`
+demonstrates them (built with `--layouts ./example-layouts/layouts`).
 
 ---
 
@@ -186,6 +189,7 @@ interface Helpers extends Record<string, any> {
   sitemap: (props: Props, config?: Partial<SitemapOpts>) => string;
   relative: (fromPath: string, toPath: string) => string;
   reboot: () => string;
+  vanilla: () => string;
   tokens: (schema: ThemeSchema, prefix: string) => string;
   tokensWithReboot: (schema: ThemeSchema, prefix: string) => string;
   qsa: (selector: string, context?: any) => any[];
@@ -335,6 +339,23 @@ Returns Bootstrap Reboot v5.3.7 CSS as a minified string.
 ```ejs
 <style><%= _helpers.reboot() %></style>
 ```
+
+### `vanilla()`
+
+Returns [`@marianmeres/vanilla`](https://jsr.io/@marianmeres/vanilla) — a tiny,
+zero-dependency reactive DOM library — as a single inlinable JS string (a self-contained
+IIFE that binds the library to `globalThis.vanilla`). Mirrors `reboot()`, but for JS:
+
+```ejs
+<head>
+  <script><%= _helpers.vanilla() %></script>
+</head>
+```
+
+Client code then destructures what it needs, e.g. `const { observable, reactTo } = vanilla;`.
+Include it once per page; run wiring code after the DOM exists; inlining requires a CSP
+allowing inline scripts. The vendored bundle is regenerated from JSR with
+`deno task vendor:vanilla`. See `example/src/x/vanilla/` for a runnable demo.
 
 ### `tokens(schema, prefix)`
 

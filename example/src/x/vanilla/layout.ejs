@@ -1,0 +1,55 @@
+<%
+	const { page, _helpers } = props;
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title><%= page.meta?.title || 'vanilla demo' %></title>
+		<style><%= _helpers.reboot() %></style>
+		<style>
+			body { padding: 2rem; font-family: system-ui, sans-serif; }
+			main { max-width: 40rem; margin: 0 auto; }
+			.counter { display: inline-flex; align-items: center; gap: 1rem; font-size: 1.5rem; }
+			.counter button { width: 2.5rem; height: 2.5rem; font-size: 1.25rem; cursor: pointer; }
+			.counter output { min-width: 3ch; text-align: center; font-variant-numeric: tabular-nums; }
+		</style>
+		<!-- @marianmeres/vanilla, inlined via the vanilla() helper (binds globalThis.vanilla) -->
+		<script><%= _helpers.vanilla() %></script>
+	</head>
+	<body>
+		<main>
+			<%= page.html %>
+
+			<div id="app"></div>
+
+			<template id="counter">
+				<div class="counter">
+					<button type="button" data-on="click:dec" aria-label="decrement">&minus;</button>
+					<output data-ref="value">0</output>
+					<button type="button" data-on="click:inc" aria-label="increment">+</button>
+				</div>
+			</template>
+		</main>
+
+		<script>
+			// Runs after the DOM exists (end of <body>); `vanilla` is already
+			// defined (inlined in <head>, no load-time side effects).
+			const { observable, reactTo, fromTemplate, refs, delegate } = globalThis.vanilla;
+
+			const node = fromTemplate("counter");
+			document.getElementById("app").appendChild(node);
+
+			const r = refs(node);
+			const count = observable(0);
+			reactTo([count], () => {
+				r.value.textContent = String(count.get());
+			});
+			delegate(node, {
+				inc: () => count.update((n) => n + 1),
+				dec: () => count.update((n) => n - 1),
+			});
+		</script>
+	</body>
+</html>

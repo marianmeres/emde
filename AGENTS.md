@@ -3,6 +3,7 @@
 ## Quick Reference
 - **Stack**: Deno, TypeScript
 - **Test**: `deno task test` | **Build example**: `deno task example:build` | **Build layout showcase**: `deno task example-layouts:build`
+- **Re-vendor vanilla bundle**: `deno task vendor:vanilla` (regenerates `src/template-helpers/vanilla.ts` from JSR)
 - **Exports**: `./src/mod.ts` (main), `./src/cli.ts` (CLI)
 
 ## Project Structure
@@ -14,8 +15,6 @@ src/
 ├── utils/
 │   ├── mod.ts              — Utility exports
 │   └── frontmatter.ts      — YAML frontmatter parser
-├── built-in-layouts/       — 7 themed `*.ejs` layouts (blog, docs, landing, minimal, news, personal, storefront)
-│   └── mod.ts              — exports BUILT_IN_LAYOUTS_DIR
 └── template-helpers/       — Built-in template helpers (one helper per file)
     ├── _esc.ts             — Shared HTML escape (use this; do not duplicate)
     ├── breadcrumbs.ts      — Root-to-current page trail
@@ -25,6 +24,7 @@ src/
     ├── relative.ts         — Relative path calculation
     ├── qsa.ts              — querySelectorAll wrapper (client-side)
     ├── reboot.ts           — Bootstrap Reboot CSS v5.3.7
+    ├── vanilla.ts          — Vendored @marianmeres/vanilla browser bundle (GENERATED — see scripts/vendor-vanilla.ts)
     ├── tokens.ts           — Design-token CSS (incl. tokensWithReboot)
     ├── version-hash.ts     — Cache-busting hash (per-process)
     ├── seo.ts              — SEO meta tags (title, OG, Twitter Card)
@@ -32,10 +32,13 @@ src/
     ├── json-ld.ts          — BreadcrumbList JSON-LD (uses \uXXXX escapes for safe JSON-in-script)
     ├── html-head.ts        — Composes <head> contents
     └── html-shell.ts       — Composes full <!DOCTYPE html> document
+scripts/
+└── vendor-vanilla.ts       — Regenerates template-helpers/vanilla.ts from jsr:@marianmeres/vanilla (esbuild IIFE; dev-only)
 tests/                      — Deno tests (one file per public surface)
 tests/fixtures/             — Test fixtures (src-a, src-cascade, src-bad-meta)
-example/src/                — Beatles-themed example site
-example-layouts/src/        — One section per built-in layout, demonstrating each
+example/src/                — Beatles-themed example site (incl. x/vanilla/ — vanilla() helper demo)
+example-layouts/layouts/    — 7 starter `*.ejs` layouts (formerly bundled; now copy-paste examples)
+example-layouts/src/        — One section per starter layout, built with `--layouts ./example-layouts/layouts`
 ```
 
 ## Critical Conventions
@@ -45,7 +48,7 @@ example-layouts/src/        — One section per built-in layout, demonstrating e
 3. Hidden directories (`_*` or `.*`) and `node_modules` are excluded from output
 4. Templates use lodash/EJS syntax (`<%= %>` for raw, `<%- %>` for HTML-escaped, `<% %>` for control flow). **Lodash is the opposite of EJS — `<%= %>` does NOT escape.**
 5. Metadata cascade: root `meta.yaml` → leaf `meta.yaml` → page frontmatter (deeper wins)
-6. Layout cascade: page's `layout.ejs` → walk ancestors up to root → `meta.layout` resolved by name in `options.layouts` (left → right) → built-in layouts → fallback
+6. Layout cascade: page's `layout.ejs` → walk ancestors up to root → `meta.layout` resolved by name in `options.layouts` (left → right) → inline fallback shell. **No bundled layouts**: a set `meta.layout` that resolves to nothing throws (loud failure).
 7. Helper cascade: `helpers.js` exports merge root → leaf (deeper wins). Cached per-file across pages within one build.
 8. All public types live in `src/emde.ts` — keep them there
 9. Each template helper gets its own file in `src/template-helpers/`
@@ -88,12 +91,15 @@ example-layouts/src/        — One section per built-in layout, demonstrating e
 | `json-ld` uses `\u003c` escapes instead of `&lt;` | No | Same observable JSON; previously corrupted titles containing `<`/`>`/`&` now round-trip correctly. |
 | `--force` publish uses `emptyDirSync` + `copySync` (was `moveSync`) | No | Same wipe behavior; preserves `destDir` inode for symlinks/watchers. |
 | `destDir === srcDir` and `srcDir under destDir` rejected | Yes | Edge case that previously could destroy source. Worth a patch note. |
+| Bundled layouts removed; `meta.layout: <name>` resolves only from `options.layouts` | **Yes** | Sites relying on bundled `layout: docs` etc. must copy `example-layouts/layouts/*.ejs` into their project and pass `--layouts`/`options.layouts`. Major-version-bump worthy. |
+| New `vanilla()` template helper | No | Additive, opt-in. Inlines `@marianmeres/vanilla` (MIT) as an IIFE bound to `globalThis.vanilla`. Generated file `src/template-helpers/vanilla.ts` (do not hand-edit). |
 
 ## Before Making Changes
 - [ ] Check existing patterns in similar files
 - [ ] Run `deno task test` (and run both `example:build` + `example-layouts:build`)
 - [ ] Types are defined in `src/emde.ts` — keep them there
 - [ ] Template helpers each get their own file in `src/template-helpers/`
+- [ ] `src/template-helpers/vanilla.ts` is GENERATED — never hand-edit; refresh via `deno task vendor:vanilla`
 - [ ] Use `_esc` from `template-helpers/_esc.ts` for HTML attribute escapes
 - [ ] If you touch the layout/helper cascade, add a fixture-driven test under `tests/fixtures/`
 - [ ] If a behavior change is BC, update the table above and flag it for a major version bump

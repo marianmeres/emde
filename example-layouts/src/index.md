@@ -2,10 +2,11 @@
 title: Emde Layout Demos
 ---
 
-# Built-in Layout Demos
+# Starter Layout Demos
 
-Each subdirectory uses a different built-in layout. No custom `layout.ejs` files — just
-`layout: <name>` in `meta.yaml`.
+Each subdirectory uses a different starter layout from [`../layouts/`](../layouts/),
+resolved by name via `--layouts ./example-layouts/layouts`. No custom `layout.ejs` files
+— just `layout: <name>` in `meta.yaml`. Copy any of these into your own project.
 
 - [SaaS Landing Page](landing/) — `layout: landing` (indigoAmber theme)
 - [Personal / Portfolio](personal/) — `layout: personal` (slateTealOcean theme)
