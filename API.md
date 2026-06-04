@@ -192,6 +192,7 @@ interface Helpers extends Record<string, any> {
   vanilla: () => string;
   tokens: (schema: ThemeSchema, prefix: string) => string;
   tokensWithReboot: (schema: ThemeSchema, prefix: string) => string;
+  theme: (name: string, prefix?: string) => string;
   qsa: (selector: string, context?: any) => any[];
   versionHash: () => string;
   seoMeta: (props: Props, config?: SeoConfig) => string;
@@ -380,6 +381,20 @@ Same as `tokens()` but also maps design tokens to Bootstrap Reboot's `--bs-*` va
 ```
 
 See [README.md](README.md#design-tokens) for the full token schema structure and examples.
+
+### `theme(name, prefix?)`
+
+Returns a **bundled** `@marianmeres/design-tokens` theme as CSS, including the Bootstrap Reboot bridge (equivalent to `tokensWithReboot` for that theme). Themes are looked up by **kebab-case** name — no `helpers.js` import needed.
+
+- `name` (`string`) — Kebab-case theme name, e.g. `"zinc"`, `"indigo-amber"`, `"slate-teal-ocean"` (matches the design-tokens CSS filenames)
+- `prefix` (`string`, optional) — CSS variable prefix. Default `"site-"`
+
+Throws if `name` is not a bundled theme (the message lists the valid names). Light + dark blocks are emitted automatically.
+
+```ejs
+<style><%= _helpers.reboot() %></style>
+<style><%= _helpers.theme("indigo-amber") %></style>
+```
 
 ### `versionHash()`
 

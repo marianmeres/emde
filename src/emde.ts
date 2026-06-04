@@ -20,6 +20,7 @@ import { seoMeta } from "./template-helpers/seo.ts";
 import { sitemap } from "./template-helpers/sitemap.ts";
 import { versionHash } from "./template-helpers/version-hash.ts";
 import { tokens, tokensWithReboot } from "./template-helpers/tokens.ts";
+import { theme } from "./template-helpers/theme.ts";
 import { vanilla } from "./template-helpers/vanilla.ts";
 import { htmlHead } from "./template-helpers/html-head.ts";
 import { htmlShell } from "./template-helpers/html-shell.ts";
@@ -160,6 +161,8 @@ export interface Helpers extends Record<string, any> {
 	tokens: typeof tokens;
 	/** Generates CSS custom properties + Bootstrap Reboot bridge variables */
 	tokensWithReboot: typeof tokensWithReboot;
+	/** Returns a bundled design-token theme (with reboot bridge) by kebab-case name */
+	theme: typeof theme;
 	/** Generates inner content of a `<head>` element */
 	htmlHead: typeof htmlHead;
 	/** Generates a complete HTML document shell */
@@ -418,6 +421,7 @@ export async function emde(
 							qsa,
 							tokens,
 							tokensWithReboot,
+							theme,
 							htmlHead,
 							htmlShell,
 							...(await _collectHelpers(relPath, tempDir, helpersCache)),

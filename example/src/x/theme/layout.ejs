@@ -1,0 +1,48 @@
+<%
+	const { page, _helpers } = props;
+	const name = page.meta?.theme || "zinc";
+%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title><%= page.meta?.title || 'theme demo' %></title>
+		<style><%= _helpers.reboot() %></style>
+		<style><%= _helpers.theme(name) %></style>
+		<style>
+			body {
+				padding: 2rem;
+				background: var(--site-color-background, #fff);
+				color: var(--site-color-foreground, #111);
+			}
+			main { max-width: 45rem; margin: 0 auto; }
+			.swatches { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1.5rem 0; }
+			.swatch { width: 3rem; height: 3rem; border-radius: var(--bs-border-radius, .375rem); border: 1px solid var(--site-color-border, #ccc); }
+			button {
+				cursor: pointer;
+				background: var(--site-color-primary);
+				color: var(--site-color-primary-foreground);
+				border: 1px solid var(--site-color-border);
+				border-radius: var(--bs-border-radius, .375rem);
+				padding: .5rem 1rem;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<%= page.html %>
+
+			<div class="swatches">
+				<div class="swatch" style="background: var(--site-color-primary)" title="primary"></div>
+				<div class="swatch" style="background: var(--site-color-accent)" title="accent"></div>
+				<div class="swatch" style="background: var(--site-color-muted)" title="muted"></div>
+				<div class="swatch" style="background: var(--site-color-destructive)" title="destructive"></div>
+			</div>
+
+			<button type="button" onclick="document.documentElement.classList.toggle('dark')">
+				Toggle dark mode
+			</button>
+		</main>
+	</body>
+</html>

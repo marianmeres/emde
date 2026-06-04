@@ -26,6 +26,7 @@ src/
     ├── reboot.ts           — Bootstrap Reboot CSS v5.3.7
     ├── vanilla.ts          — Vendored @marianmeres/vanilla browser bundle (GENERATED — see scripts/vendor-vanilla.ts)
     ├── tokens.ts           — Design-token CSS (incl. tokensWithReboot)
+    ├── theme.ts            — Bundled design-token themes by kebab-case name (+ reboot bridge); thin lookup over @marianmeres/design-tokens
     ├── version-hash.ts     — Cache-busting hash (per-process)
     ├── seo.ts              — SEO meta tags (title, OG, Twitter Card)
     ├── hreflang.ts         — hreflang alternate links for /<locale>/ paths
@@ -36,7 +37,7 @@ scripts/
 └── vendor-vanilla.ts       — Regenerates template-helpers/vanilla.ts from jsr:@marianmeres/vanilla (esbuild IIFE; dev-only)
 tests/                      — Deno tests (one file per public surface)
 tests/fixtures/             — Test fixtures (src-a, src-cascade, src-bad-meta)
-example/src/                — Beatles-themed example site (incl. x/vanilla/ — vanilla() helper demo)
+example/src/                — Beatles-themed example site (incl. x/vanilla/ + x/theme/ helper demos)
 example-layouts/layouts/    — 7 starter `*.ejs` layouts (formerly bundled; now copy-paste examples)
 example-layouts/src/        — One section per starter layout, built with `--layouts ./example-layouts/layouts`
 ```
@@ -93,6 +94,7 @@ example-layouts/src/        — One section per starter layout, built with `--la
 | `destDir === srcDir` and `srcDir under destDir` rejected | Yes | Edge case that previously could destroy source. Worth a patch note. |
 | Bundled layouts removed; `meta.layout: <name>` resolves only from `options.layouts` | **Yes** | Sites relying on bundled `layout: docs` etc. must copy `example-layouts/layouts/*.ejs` into their project and pass `--layouts`/`options.layouts`. Major-version-bump worthy. |
 | New `vanilla()` template helper | No | Additive, opt-in. Inlines `@marianmeres/vanilla` (MIT) as an IIFE bound to `globalThis.vanilla`. Generated file `src/template-helpers/vanilla.ts` (do not hand-edit). |
+| New `theme(name, prefix?)` template helper | No | Additive. Returns a bundled `@marianmeres/design-tokens` theme (with reboot bridge) by kebab-case name. Runtime lookup over an existing dep — no vendoring/generator. |
 
 ## Before Making Changes
 - [ ] Check existing patterns in similar files

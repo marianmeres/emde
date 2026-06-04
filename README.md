@@ -14,7 +14,7 @@ Works out-of-the-box with no configuration, while still being fully extensible w
 - YAML frontmatter and `meta.yaml` support with hierarchical merging
 - Customizable layouts using lodash/EJS templates, with cascade up the directory tree
 - Named layouts resolved by `meta.layout` from your `--layouts` / `options.layouts` directories (copy-paste starter layouts live in [`example-layouts/layouts/`](./example-layouts/layouts/))
-- Built-in template helpers for navigation, breadcrumbs, sitemaps, SEO, hreflang, JSON-LD, design tokens, full `<head>` / document shells, and inlining [`@marianmeres/vanilla`](https://jsr.io/@marianmeres/vanilla) for client-side reactivity
+- Built-in template helpers for navigation, breadcrumbs, sitemaps, SEO, hreflang, JSON-LD, design tokens (incl. bundled themes by name), full `<head>` / document shells, and inlining [`@marianmeres/vanilla`](https://jsr.io/@marianmeres/vanilla) for client-side reactivity
 - Watch mode (`--watch`) with debounced, serialized rebuilds
 - Hidden content support (directories starting with `_` or `.`)
 - Automatic `node_modules` exclusion
@@ -339,8 +339,23 @@ Then in `layout.ejs`:
 
 ### Pre-built themes
 
-The `@marianmeres/design-tokens` package ships 29 pre-built themes with light and dark
-modes. To use them, import directly in your `helpers.js`:
+The `@marianmeres/design-tokens` package ships dozens of pre-built themes with light and
+dark modes, all reachable by **kebab-case name** through the built-in `theme()` helper —
+no `helpers.js` wiring needed. It returns the theme's CSS custom properties **with the
+Bootstrap Reboot bridge** baked in, so pair it with `reboot()`:
+
+```ejs
+<head>
+  <style><%= _helpers.reboot() %></style>
+  <style><%= _helpers.theme("indigo-amber") %></style>
+</head>
+```
+
+The default token prefix is `site-`; override it with a second argument:
+`_helpers.theme("zinc", "my-")`. An unknown name throws with the list of valid names.
+
+If you'd rather pass a schema object (e.g. a custom theme) instead of a bundled name,
+import it in `helpers.js` and call `tokensWithReboot` directly:
 
 ```js
 import { zinc } from "@marianmeres/design-tokens/themes";
