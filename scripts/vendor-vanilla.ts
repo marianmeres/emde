@@ -18,7 +18,7 @@ import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { dirname, fromFileUrl, join } from "@std/path";
 
 /** Pinned vanilla version to vendor. Bump this to refresh. */
-const VANILLA_VERSION = "1.6.0";
+const VANILLA_VERSION = "1.8.0";
 
 const HERE = dirname(fromFileUrl(import.meta.url));
 const OUT_FILE = join(HERE, "..", "src", "template-helpers", "vanilla.ts");
