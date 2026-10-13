@@ -17,7 +17,7 @@
     "example-layouts:build": "deno run -A src/cli.ts --indir example-layouts/src --outdir example-layouts/dist --layouts ./example-layouts/layouts --force --verbose",
     "example-layouts:watch": "deno run -A src/cli.ts --indir example-layouts/src --outdir example-layouts/dist --layouts ./example-layouts/layouts --force --verbose --watch",
     "vendor:vanilla": "deno run -A scripts/vendor-vanilla.ts",
-    "release": "deno run -A jsr:@marianmeres/release",
+    "release": "deno run -A jsr:@marianmeres/release@^2.1.0 --before-commit \"deno task example:build && deno task example-layouts:build\"",
     "publish": "deno publish",
     "rp": "deno task release -y && deno task publish",
     "rpm": "deno task release minor -y && deno task publish"
